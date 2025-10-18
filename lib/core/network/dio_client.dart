@@ -227,9 +227,17 @@ class DioClient {
 
       case DioExceptionType.badResponse:
         final statusCode = error.response?.statusCode;
-        final message = error.response?.data['message'] ??
-                       error.response?.data['detail'] ??
-                       'Error del servidor';
+        final responseData = error.response?.data;
+        String message = 'Error del servidor';
+
+        if (responseData is Map<String, dynamic>) {
+          message = responseData['message'] ??
+                   responseData['detail'] ??
+                   responseData['error'] ??
+                   'Error del servidor';
+        } else if (responseData is String) {
+          message = responseData;
+        }
 
         switch (statusCode) {
           case 400:
