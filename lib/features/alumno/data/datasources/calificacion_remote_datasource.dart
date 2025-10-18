@@ -13,14 +13,15 @@ class CalificacionRemoteDataSourceImpl implements CalificacionRemoteDataSource {
 
   @override
   Future<List<CalificacionModel>> getCalificacionesAlumno() async {
-    final response = await dioClient.get('/calificaciones/mis-calificaciones/');
+    // Obtener todas las calificaciones del alumno actual
+    final response = await dioClient.get('/calificaciones/');
     final List<dynamic> data = response.data;
     return data.map((json) => CalificacionModel.fromJson(json)).toList();
   }
 
   @override
   Future<List<CalificacionModel>> getCalificacionesByTema(String temaId) async {
-    final response = await dioClient.get('/calificaciones/mis-calificaciones/?tema_id=$temaId');
+    final response = await dioClient.get('/calificaciones/?tema=$temaId');
     final List<dynamic> data = response.data;
     return data.map((json) => CalificacionModel.fromJson(json)).toList();
   }

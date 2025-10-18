@@ -24,6 +24,7 @@ class ActividadRemoteDataSourceImpl implements ActividadRemoteDataSource {
 
   @override
   Future<List<PreguntaModel>> getPreguntasByActividad(String actividadId) async {
+    // Usar la ruta correcta del backend
     final response = await dioClient.get('/actividades/$actividadId/preguntas/');
     final List<dynamic> data = response.data;
     return data.map((json) => PreguntaModel.fromJson(json)).toList();
@@ -34,14 +35,29 @@ class ActividadRemoteDataSourceImpl implements ActividadRemoteDataSource {
     required String actividadId,
     required Map<String, String> respuestas,
   }) async {
-    final response = await dioClient.post(
-      '/actividades/$actividadId/submit/',
+    // Crear un intento y luego finalizarlo
+    // Primero crear el intento
+    final intentoResponse = await dioClient.post(
+      '/intentos/crear/',
+      data: {
+        'actividad_id': actividadId,
+      },
+    );
+
+    final intentoId = intentoResponse.data['id'] ?? intentoResponse.data['_id'];
+
+    // Enviar respuestas
+    await dioClient.post(
+      '/intentos/$intentoId/respuestas/',
       data: {
         'respuestas': respuestas.entries
             .map((e) => {'pregunta_id': e.key, 'opcion_id': e.value})
             .toList(),
       },
     );
+
+    // Finalizar el intento
+    final response = await dioClient.post('/intentos/$intentoId/finalizar/');
     return response.data;
   }
 }
