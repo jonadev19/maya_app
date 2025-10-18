@@ -15,11 +15,13 @@ class AlumnoModel extends Alumno {
 
   factory AlumnoModel.fromJson(Map<String, dynamic> json) {
     return AlumnoModel(
-      id: json['id'] as int,
+      id: json['id'] is String ? int.parse(json['id']) : json['id'] as int,
       nombre: json['nombre'] as String,
       apellido: json['apellido'] as String,
       email: json['email'] as String,
-      grupoId: json['grupo_id'] as int?,
+      grupoId: json['grupo_id'] != null
+          ? (json['grupo_id'] is String ? int.parse(json['grupo_id']) : json['grupo_id'] as int)
+          : null,
       grupoNombre: json['grupo_nombre'] as String?,
       nivel: json['nivel'] as String,
       fechaRegistro: json['fecha_registro'] != null

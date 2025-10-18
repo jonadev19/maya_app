@@ -13,13 +13,13 @@ class ActividadModel extends Actividad {
 
   factory ActividadModel.fromJson(Map<String, dynamic> json) {
     return ActividadModel(
-      id: json['id'] as int,
-      temaId: json['tema_id'] as int,
+      id: json['id'] is String ? int.parse(json['id']) : json['id'] as int,
+      temaId: json['tema_id'] is String ? int.parse(json['tema_id']) : json['tema_id'] as int,
       titulo: json['titulo'] as String,
       descripcion: json['descripcion'] as String,
       tipo: json['tipo'] as String,
-      puntuacionMaxima: json['puntuacion_maxima'] as int,
-      duracionMinutos: json['duracion_minutos'] as int,
+      puntuacionMaxima: json['puntuacion_maxima'] is String ? int.parse(json['puntuacion_maxima']) : json['puntuacion_maxima'] as int,
+      duracionMinutos: json['duracion_minutos'] is String ? int.parse(json['duracion_minutos']) : json['duracion_minutos'] as int,
     );
   }
 
