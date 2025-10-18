@@ -21,6 +21,16 @@ import '../../features/alumno/domain/repositories/calificacion_repository.dart';
 import '../../features/alumno/presentation/providers/tema_provider.dart';
 import '../../features/alumno/presentation/providers/actividad_provider.dart';
 import '../../features/alumno/presentation/providers/calificacion_provider.dart';
+import '../../features/admin/data/datasources/admin_remote_datasource.dart';
+import '../../features/admin/data/repositories/alumno_repository_impl.dart';
+import '../../features/admin/data/repositories/grupo_repository_impl.dart';
+import '../../features/admin/data/repositories/calificacion_admin_repository_impl.dart';
+import '../../features/admin/domain/repositories/alumno_repository.dart';
+import '../../features/admin/domain/repositories/grupo_repository.dart';
+import '../../features/admin/domain/repositories/calificacion_admin_repository.dart';
+import '../../features/admin/presentation/providers/alumno_provider.dart';
+import '../../features/admin/presentation/providers/grupo_provider.dart';
+import '../../features/admin/presentation/providers/calificacion_admin_provider.dart';
 import '../network/dio_client.dart';
 
 class DependencyInjection {
@@ -59,6 +69,19 @@ class DependencyInjection {
   static late TemaProvider temaProvider;
   static late ActividadProvider actividadProvider;
   static late CalificacionProvider calificacionProvider;
+
+  // Admin Data Sources
+  static late AdminRemoteDataSource adminRemoteDataSource;
+
+  // Admin Repositories
+  static late AlumnoRepository alumnoRepository;
+  static late GrupoRepository grupoRepository;
+  static late CalificacionAdminRepository calificacionAdminRepository;
+
+  // Admin Providers
+  static late AlumnoProvider alumnoProvider;
+  static late GrupoProvider grupoProvider;
+  static late CalificacionAdminProvider calificacionAdminProvider;
 
   static Future<void> init() async {
     // Core
@@ -110,5 +133,18 @@ class DependencyInjection {
     temaProvider = TemaProvider(temaRepository: temaRepository);
     actividadProvider = ActividadProvider(actividadRepository: actividadRepository);
     calificacionProvider = CalificacionProvider(calificacionRepository: calificacionRepository);
+
+    // Admin Data Sources
+    adminRemoteDataSource = AdminRemoteDataSourceImpl(dioClient: dioClient);
+
+    // Admin Repositories
+    alumnoRepository = AlumnoRepositoryImpl(remoteDataSource: adminRemoteDataSource);
+    grupoRepository = GrupoRepositoryImpl(remoteDataSource: adminRemoteDataSource);
+    calificacionAdminRepository = CalificacionAdminRepositoryImpl(remoteDataSource: adminRemoteDataSource);
+
+    // Admin Providers
+    alumnoProvider = AlumnoProvider(repository: alumnoRepository);
+    grupoProvider = GrupoProvider(repository: grupoRepository);
+    calificacionAdminProvider = CalificacionAdminProvider(repository: calificacionAdminRepository);
   }
 }

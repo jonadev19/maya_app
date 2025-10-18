@@ -28,6 +28,11 @@ class AppStrings {
   static const String intermedio = 'Intermedio';
   static const String avanzado = 'Avanzado';
 
+  // Alias para compatibilidad
+  static const String nivelBasico = basico;
+  static const String nivelIntermedio = intermedio;
+  static const String nivelAvanzado = avanzado;
+
   // Temas
   static const String temas = 'Temas';
   static const String numeros = 'Números';

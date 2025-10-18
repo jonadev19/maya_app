@@ -31,6 +31,11 @@ class AppColors {
   static const Color intermediateLevelColor = Color(0xFFFFC107); // Amarillo
   static const Color advancedLevelColor = Color(0xFFF44336); // Rojo
 
+  // Alias para compatibilidad
+  static const Color nivelBasicoColor = basicLevelColor;
+  static const Color nivelIntermedioColor = intermediateLevelColor;
+  static const Color nivelAvanzadoColor = advancedLevelColor;
+
   // Gradientes
   static const LinearGradient primaryGradient = LinearGradient(
     colors: [primaryColor, Color(0xFF654321)],

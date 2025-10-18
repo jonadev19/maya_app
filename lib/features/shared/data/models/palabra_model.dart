@@ -12,14 +12,23 @@ class PalabraModel extends Palabra {
   });
 
   factory PalabraModel.fromJson(Map<String, dynamic> json) {
+    // El backend usa 'palabra_espanol', no 'traduccion_espanol'
+    final traduccion = (json['palabra_espanol'] as String?) ??
+        (json['palabraEspanol'] as String?) ??
+        (json['traduccion_espanol'] as String?) ??
+        (json['traduccionEspanol'] as String?) ??
+        '';
+
     return PalabraModel(
       id: json['id'].toString(),
-      temaId: json['tema_id'].toString(),
-      palabraMaya: (json['palabra_maya'] as String?) ?? '',
-      traduccionEspanol: (json['traduccion_espanol'] as String?) ?? '',
+      temaId: json['tema_id']?.toString() ?? json['tema']?.toString() ?? '',
+      palabraMaya: (json['palabra_maya'] as String?) ??
+          (json['palabraMaya'] as String?) ??
+          '',
+      traduccionEspanol: traduccion,
       pronunciacion: json['pronunciacion'] as String?,
-      audioUrl: json['audio_url'] as String?,
-      imagenUrl: json['imagen_url'] as String?,
+      audioUrl: json['audio_url'] as String? ?? json['audioUrl'] as String?,
+      imagenUrl: json['imagen_url'] as String? ?? json['imagenUrl'] as String?,
     );
   }
 

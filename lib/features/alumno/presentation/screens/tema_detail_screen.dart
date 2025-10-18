@@ -41,16 +41,41 @@ class _TemaDetailScreenState extends State<TemaDetailScreen>
       appBar: AppBar(
         title: Consumer<TemaProvider>(
           builder: (context, provider, _) {
-            return Text(provider.currentTema?.nombre ?? 'Cargando...');
+            return Text(
+              provider.currentTema?.nombre ?? 'Cargando...',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            );
           },
         ),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Vocabulario'),
-            Tab(text: 'Materiales'),
-            Tab(text: 'Actividades'),
-          ],
+        elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Container(
+            color: Theme.of(context).colorScheme.surface,
+            child: TabBar(
+              controller: _tabController,
+              labelColor: AppColors.primaryColor,
+              unselectedLabelColor: AppColors.textSecondaryColor,
+              indicatorColor: AppColors.primaryColor,
+              indicatorWeight: 3,
+              labelStyle: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
+              ),
+              tabs: const [
+                Tab(text: 'Vocabulario'),
+                Tab(text: 'Materiales'),
+                Tab(text: 'Actividades'),
+              ],
+            ),
+          ),
         ),
       ),
       body: Consumer<TemaProvider>(
@@ -143,13 +168,20 @@ class _TemaDetailScreenState extends State<TemaDetailScreen>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        palabra.traduccionEspanol,
-                        style: Theme.of(context).textTheme.bodyLarge,
+                        palabra.traduccionEspanol.isNotEmpty
+                            ? 'Significado: ${palabra.traduccionEspanol}'
+                            : 'Significado: (No disponible)',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: palabra.traduccionEspanol.isEmpty
+                                  ? AppColors.textSecondaryColor
+                                  : null,
+                            ),
                       ),
-                      if (palabra.pronunciacion != null) ...[
+                      if (palabra.pronunciacion != null &&
+                          palabra.pronunciacion!.isNotEmpty) ...[
                         const SizedBox(height: 4),
                         Text(
-                          '/${palabra.pronunciacion}/',
+                          'Pronunciación: /${palabra.pronunciacion}/',
                           style:
                               Theme.of(context).textTheme.bodySmall?.copyWith(
                                     fontStyle: FontStyle.italic,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -90,11 +91,7 @@ class AdminHomeScreen extends StatelessWidget {
                   title: AppStrings.gestionAlumnos,
                   color: AppColors.primaryColor,
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Módulo en desarrollo'),
-                      ),
-                    );
+                    context.push('/admin/alumnos');
                   },
                 ),
                 _MenuCard(
@@ -102,11 +99,7 @@ class AdminHomeScreen extends StatelessWidget {
                   title: AppStrings.calificaciones,
                   color: AppColors.secondaryColor,
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Módulo en desarrollo'),
-                      ),
-                    );
+                    context.push('/admin/calificaciones');
                   },
                 ),
                 _MenuCard(
@@ -114,11 +107,7 @@ class AdminHomeScreen extends StatelessWidget {
                   title: AppStrings.reportes,
                   color: AppColors.accentColor,
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Módulo en desarrollo'),
-                      ),
-                    );
+                    context.push('/admin/reportes');
                   },
                 ),
                 _MenuCard(

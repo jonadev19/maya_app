@@ -32,21 +32,21 @@ class TemaRemoteDataSourceImpl implements TemaRemoteDataSource {
 
   @override
   Future<List<MaterialModel>> getMaterialesByTema(String temaId) async {
-    final response = await dioClient.get('/materiales/?tema=$temaId');
+    final response = await dioClient.get('/materiales/?tema_id=$temaId');
     final List<dynamic> data = response.data;
     return data.map((json) => MaterialModel.fromJson(json)).toList();
   }
 
   @override
   Future<List<PalabraModel>> getPalabrasByTema(String temaId) async {
-    final response = await dioClient.get('/vocabulario/?tema=$temaId');
+    final response = await dioClient.get('/vocabulario/?tema_id=$temaId');
     final List<dynamic> data = response.data;
     return data.map((json) => PalabraModel.fromJson(json)).toList();
   }
 
   @override
   Future<List<ActividadModel>> getActividadesByTema(String temaId) async {
-    final response = await dioClient.get('/actividades/?tema=$temaId');
+    final response = await dioClient.get('/actividades/?tema_id=$temaId');
     final List<dynamic> data = response.data;
     return data.map((json) => ActividadModel.fromJson(json)).toList();
   }

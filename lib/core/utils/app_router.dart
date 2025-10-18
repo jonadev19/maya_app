@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/admin/presentation/screens/admin_home_screen.dart';
+import '../../features/admin/presentation/screens/alumnos/alumnos_list_screen.dart';
+import '../../features/admin/presentation/screens/alumnos/alumno_form_screen.dart';
+import '../../features/admin/presentation/screens/calificaciones/calificaciones_admin_screen.dart';
+import '../../features/admin/presentation/screens/reportes/reportes_screen.dart';
 import '../../features/alumno/presentation/screens/alumno_home_screen.dart';
 import '../../features/alumno/presentation/screens/tema_detail_screen.dart';
 import '../../features/alumno/presentation/screens/actividad_screen.dart';
@@ -70,6 +74,53 @@ class AppRouter {
           state: state,
           child: const AdminHomeScreen(),
         ),
+        routes: [
+          GoRoute(
+            path: 'alumnos',
+            pageBuilder: (context, state) => _buildPageWithSlideTransition(
+              context: context,
+              state: state,
+              child: const AlumnosListScreen(),
+            ),
+            routes: [
+              GoRoute(
+                path: 'create',
+                pageBuilder: (context, state) => _buildPageWithSlideTransition(
+                  context: context,
+                  state: state,
+                  child: const AlumnoFormScreen(),
+                ),
+              ),
+              GoRoute(
+                path: 'edit/:id',
+                pageBuilder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return _buildPageWithSlideTransition(
+                    context: context,
+                    state: state,
+                    child: AlumnoFormScreen(alumnoId: id),
+                  );
+                },
+              ),
+            ],
+          ),
+          GoRoute(
+            path: 'calificaciones',
+            pageBuilder: (context, state) => _buildPageWithSlideTransition(
+              context: context,
+              state: state,
+              child: const CalificacionesAdminScreen(),
+            ),
+          ),
+          GoRoute(
+            path: 'reportes',
+            pageBuilder: (context, state) => _buildPageWithSlideTransition(
+              context: context,
+              state: state,
+              child: const ReportesScreen(),
+            ),
+          ),
+        ],
       ),
       GoRoute(
         path: '/alumno',
