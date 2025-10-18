@@ -7,7 +7,8 @@ abstract class ActividadRemoteDataSource {
   Future<List<PreguntaModel>> getPreguntasByActividad(String actividadId);
   Future<Map<String, dynamic>> submitActividad({
     required String actividadId,
-    required Map<String, String> respuestas, // preguntaId -> opcionId
+    required String alumnoId,
+    required Map<String, String> respuestas, // preguntaId -> respuesta
   });
 }
 
@@ -24,15 +25,17 @@ class ActividadRemoteDataSourceImpl implements ActividadRemoteDataSource {
 
   @override
   Future<List<PreguntaModel>> getPreguntasByActividad(String actividadId) async {
-    // Usar la ruta correcta del backend
-    final response = await dioClient.get('/actividades/$actividadId/preguntas/');
-    final List<dynamic> data = response.data;
-    return data.map((json) => PreguntaModel.fromJson(json)).toList();
+    // Las preguntas vienen incluidas en la actividad según la documentación
+    final response = await dioClient.get('/actividades/$actividadId/');
+    final actividad = response.data;
+    final List<dynamic> preguntasData = actividad['preguntas'] ?? [];
+    return preguntasData.map((json) => PreguntaModel.fromJson(json)).toList();
   }
 
   @override
   Future<Map<String, dynamic>> submitActividad({
     required String actividadId,
+    required String alumnoId,
     required Map<String, String> respuestas,
   }) async {
     // Crear un intento y luego finalizarlo
@@ -40,21 +43,23 @@ class ActividadRemoteDataSourceImpl implements ActividadRemoteDataSource {
     final intentoResponse = await dioClient.post(
       '/intentos/crear/',
       data: {
+        'alumno_id': alumnoId,
         'actividad_id': actividadId,
       },
     );
 
     final intentoId = intentoResponse.data['id'] ?? intentoResponse.data['_id'];
 
-    // Enviar respuestas
-    await dioClient.post(
-      '/intentos/$intentoId/respuestas/',
-      data: {
-        'respuestas': respuestas.entries
-            .map((e) => {'pregunta_id': e.key, 'opcion_id': e.value})
-            .toList(),
-      },
-    );
+    // Enviar respuestas una por una
+    for (final respuesta in respuestas.entries) {
+      await dioClient.post(
+        '/intentos/$intentoId/respuestas/',
+        data: {
+          'pregunta_id': respuesta.key,
+          'respuesta_alumno': respuesta.value, // Cambiar de 'opcion_id' a 'respuesta_alumno'
+        },
+      );
+    }
 
     // Finalizar el intento
     final response = await dioClient.post('/intentos/$intentoId/finalizar/');

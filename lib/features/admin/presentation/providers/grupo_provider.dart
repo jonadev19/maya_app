@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../../../shared/domain/entities/grupo.dart';
 import '../../domain/repositories/grupo_repository.dart';
+import '../../domain/repositories/alumno_repository.dart';
 
 enum GrupoState {
   initial,
@@ -11,8 +12,12 @@ enum GrupoState {
 
 class GrupoProvider extends ChangeNotifier {
   final GrupoRepository repository;
+  final AlumnoRepository alumnoRepository;
 
-  GrupoProvider({required this.repository});
+  GrupoProvider({
+    required this.repository,
+    required this.alumnoRepository,
+  });
 
   GrupoState _state = GrupoState.initial;
   List<Grupo> _grupos = [];
@@ -32,17 +37,45 @@ class GrupoProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    final result = await repository.getGrupos();
-    result.fold(
+    // Cargar grupos y alumnos en paralelo
+    final gruposResult = await repository.getGrupos();
+    final alumnosResult = await alumnoRepository.getAlumnos();
+
+    gruposResult.fold(
       (failure) {
         _state = GrupoState.error;
         _errorMessage = failure.message;
         notifyListeners();
       },
       (grupos) {
-        _grupos = grupos;
-        _state = GrupoState.loaded;
-        notifyListeners();
+        alumnosResult.fold(
+          (failure) {
+            // Si falla obtener alumnos, usar grupos sin contador
+            _grupos = grupos;
+            _state = GrupoState.loaded;
+            notifyListeners();
+          },
+          (alumnos) {
+            // Calcular cantidad de alumnos por grupo
+            _grupos = grupos.map((grupo) {
+              final cantidadAlumnos = alumnos.where((alumno) => 
+                alumno.grupoId == grupo.id && alumno.activo
+              ).length;
+              
+              return Grupo(
+                id: grupo.id,
+                nombre: grupo.nombre,
+                nivel: grupo.nivel,
+                descripcion: grupo.descripcion,
+                cantidadAlumnos: cantidadAlumnos,
+                activo: grupo.activo,
+              );
+            }).toList();
+            
+            _state = GrupoState.loaded;
+            notifyListeners();
+          },
+        );
       },
     );
   }
@@ -53,17 +86,43 @@ class GrupoProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    final result = await repository.getGrupoById(id);
-    result.fold(
+    // Cargar grupo y alumnos para calcular cantidad
+    final grupoResult = await repository.getGrupoById(id);
+    final alumnosResult = await alumnoRepository.getAlumnos();
+
+    grupoResult.fold(
       (failure) {
         _state = GrupoState.error;
         _errorMessage = failure.message;
         notifyListeners();
       },
       (grupo) {
-        _currentGrupo = grupo;
-        _state = GrupoState.loaded;
-        notifyListeners();
+        alumnosResult.fold(
+          (failure) {
+            // Si falla obtener alumnos, usar grupo sin contador actualizado
+            _currentGrupo = grupo;
+            _state = GrupoState.loaded;
+            notifyListeners();
+          },
+          (alumnos) {
+            // Calcular cantidad de alumnos en este grupo
+            final cantidadAlumnos = alumnos.where((alumno) => 
+              alumno.grupoId == grupo.id && alumno.activo
+            ).length;
+            
+            _currentGrupo = Grupo(
+              id: grupo.id,
+              nombre: grupo.nombre,
+              nivel: grupo.nivel,
+              descripcion: grupo.descripcion,
+              cantidadAlumnos: cantidadAlumnos,
+              activo: grupo.activo,
+            );
+            
+            _state = GrupoState.loaded;
+            notifyListeners();
+          },
+        );
       },
     );
   }

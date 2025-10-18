@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
@@ -12,13 +11,15 @@ class AdminHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.user;
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.dashboard),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout_outlined),
             onPressed: () async {
               await authProvider.logout();
             },
@@ -33,19 +34,20 @@ class AdminHomeScreen extends StatelessWidget {
           children: [
             // Welcome Card
             Card(
+              elevation: 0.5,
+              color: colorScheme.surface,
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
                     CircleAvatar(
                       radius: 30,
-                      backgroundColor: AppColors.primaryColor,
+                      backgroundColor: colorScheme.primaryContainer,
                       child: Text(
                         user?.nombre.substring(0, 1).toUpperCase() ?? 'A',
-                        style: const TextStyle(
-                          fontSize: 24,
+                        style: textTheme.headlineMedium?.copyWith(
+                          color: colorScheme.onPrimaryContainer,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.textLightColor,
                         ),
                       ),
                     ),
@@ -56,13 +58,13 @@ class AdminHomeScreen extends StatelessWidget {
                         children: [
                           Text(
                             '${AppStrings.welcome}, ${user?.nombre ?? ''}!',
-                            style: Theme.of(context).textTheme.titleLarge,
+                            style: textTheme.titleLarge,
                           ),
                           const SizedBox(height: 4),
                           Text(
                             AppStrings.administrador,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: AppColors.textSecondaryColor,
+                            style: textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
                                 ),
                           ),
                         ],
@@ -74,9 +76,12 @@ class AdminHomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             // Menu Options
-            Text(
-              'Módulos',
-              style: Theme.of(context).textTheme.titleLarge,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Text(
+                'Módulos',
+                style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
             ),
             const SizedBox(height: 16),
             GridView.count(
@@ -87,39 +92,31 @@ class AdminHomeScreen extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               children: [
                 _MenuCard(
-                  icon: Icons.people,
+                  icon: Icons.people_outline,
                   title: AppStrings.gestionAlumnos,
-                  color: AppColors.primaryColor,
                   onTap: () {
                     context.push('/admin/alumnos');
                   },
                 ),
                 _MenuCard(
-                  icon: Icons.grade,
+                  icon: Icons.grade_outlined,
                   title: AppStrings.calificaciones,
-                  color: AppColors.secondaryColor,
                   onTap: () {
                     context.push('/admin/calificaciones');
                   },
                 ),
                 _MenuCard(
-                  icon: Icons.assessment,
+                  icon: Icons.assessment_outlined,
                   title: AppStrings.reportes,
-                  color: AppColors.accentColor,
                   onTap: () {
                     context.push('/admin/reportes');
                   },
                 ),
                 _MenuCard(
-                  icon: Icons.group,
+                  icon: Icons.group_outlined,
                   title: AppStrings.grupo,
-                  color: AppColors.infoColor,
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Módulo en desarrollo'),
-                      ),
-                    );
+                    context.push('/admin/grupos');
                   },
                 ),
               ],
@@ -134,23 +131,23 @@ class AdminHomeScreen extends StatelessWidget {
 class _MenuCard extends StatelessWidget {
   final IconData icon;
   final String title;
-  final Color color;
   final VoidCallback onTap;
 
   const _MenuCard({
     required this.icon,
     required this.title,
-    required this.color,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Card(
-      elevation: 2,
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -159,20 +156,22 @@ class _MenuCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: colorScheme.primaryContainer.withOpacity(0.4),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   icon,
-                  size: 40,
-                  color: color,
+                  size: 32,
+                  color: colorScheme.onPrimaryContainer,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleSmall,
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),

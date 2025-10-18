@@ -81,7 +81,6 @@ class _ActividadScreenState extends State<ActividadScreen> {
             itemCount: provider.preguntas.length,
             itemBuilder: (context, index) {
               final pregunta = provider.preguntas[index];
-              final selectedOpcionId = provider.respuestas[pregunta.id];
 
               return Card(
                 margin: const EdgeInsets.only(bottom: 16),
@@ -111,7 +110,7 @@ class _ActividadScreenState extends State<ActividadScreen> {
                       ),
                       const SizedBox(height: 16),
                       ...pregunta.opciones.map((opcion) {
-                        final isSelected = selectedOpcionId == opcion.id;
+                        final isSelected = provider.respuestas[pregunta.id] == opcion.textoOpcion;
                         return Container(
                           margin: const EdgeInsets.only(bottom: 8),
                           decoration: BoxDecoration(
@@ -127,12 +126,12 @@ class _ActividadScreenState extends State<ActividadScreen> {
                                 : null,
                           ),
                           child: RadioListTile<String>(
-                            value: opcion.id,
-                            groupValue: selectedOpcionId,
+                            value: opcion.textoOpcion, // Usar el texto en lugar del ID
+                            groupValue: provider.respuestas[pregunta.id], // Comparar con el texto guardado
                             title: Text(opcion.textoOpcion),
                             onChanged: (value) {
                               if (value != null) {
-                                provider.selectRespuesta(pregunta.id, value);
+                                provider.selectRespuesta(pregunta.id, value); // Guardar el texto de la respuesta
                               }
                             },
                           ),
@@ -187,11 +186,22 @@ class _ActividadScreenState extends State<ActividadScreen> {
     );
   }
 
+  // Helper method para parsing seguro
+  int? _parseToInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value);
+    if (value is double) return value.round();
+    return null;
+  }
+
   Widget _buildResultadoScreen(ActividadProvider provider) {
     final resultado = provider.resultado!;
-    final puntuacion = resultado['puntuacion_obtenida'] as int;
-    final puntuacionMaxima = resultado['puntuacion_maxima'] as int;
-    final porcentaje = (puntuacion / puntuacionMaxima * 100).round();
+    
+    // Parsing robusto de puntuaciones
+    final puntuacion = _parseToInt(resultado['puntuacion_obtenida'] ?? resultado['puntaje_obtenido']) ?? 0;
+    final puntuacionMaxima = _parseToInt(resultado['puntuacion_maxima'] ?? resultado['puntaje_total']) ?? 100;
+    final porcentaje = puntuacionMaxima > 0 ? (puntuacion / puntuacionMaxima * 100).round() : 0;
     final aprobado = porcentaje >= 70;
 
     return Center(

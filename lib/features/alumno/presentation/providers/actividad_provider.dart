@@ -2,13 +2,18 @@ import 'package:flutter/foundation.dart';
 import '../../../shared/domain/entities/actividad.dart';
 import '../../../shared/domain/entities/pregunta.dart';
 import '../../domain/repositories/actividad_repository.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 
 enum ActividadState { initial, loading, loaded, submitting, completed, error }
 
 class ActividadProvider with ChangeNotifier {
   final ActividadRepository actividadRepository;
+  final AuthProvider authProvider;
 
-  ActividadProvider({required this.actividadRepository});
+  ActividadProvider({
+    required this.actividadRepository,
+    required this.authProvider,
+  });
 
   ActividadState _state = ActividadState.initial;
   Actividad? _actividad;
@@ -70,8 +75,18 @@ class ActividadProvider with ChangeNotifier {
     _state = ActividadState.submitting;
     notifyListeners();
 
+    // Obtener el ID del alumno del usuario autenticado
+    final alumnoId = authProvider.user?.id;
+    if (alumnoId == null) {
+      _state = ActividadState.error;
+      _errorMessage = 'No se pudo obtener el ID del alumno';
+      notifyListeners();
+      return;
+    }
+
     final result = await actividadRepository.submitActividad(
       actividadId: _actividad!.id,
+      alumnoId: alumnoId,
       respuestas: _respuestas,
     );
 

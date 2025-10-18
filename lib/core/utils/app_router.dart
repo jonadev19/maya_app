@@ -3,16 +3,22 @@ import 'package:go_router/go_router.dart';
 import '../../features/admin/presentation/screens/admin_home_screen.dart';
 import '../../features/admin/presentation/screens/alumnos/alumnos_list_screen.dart';
 import '../../features/admin/presentation/screens/alumnos/alumno_form_screen.dart';
+import '../../features/admin/presentation/screens/grupos/grupos_list_screen.dart';
+import '../../features/admin/presentation/screens/grupos/grupo_form_screen.dart';
+import '../../features/admin/presentation/screens/grupos/grupo_detail_screen.dart';
+import '../../features/admin/presentation/screens/grupos/grupo_alumnos_screen.dart';
 import '../../features/admin/presentation/screens/calificaciones/calificaciones_admin_screen.dart';
 import '../../features/admin/presentation/screens/reportes/reportes_screen.dart';
 import '../../features/alumno/presentation/screens/alumno_home_screen.dart';
 import '../../features/alumno/presentation/screens/tema_detail_screen.dart';
+import '../../features/alumno/presentation/screens/material_detail_screen.dart';
 import '../../features/alumno/presentation/screens/actividad_screen.dart';
 import '../../features/alumno/presentation/screens/calificaciones_screen.dart';
 import '../../features/alumno/presentation/screens/perfil_screen.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
+import '../../features/shared/domain/entities/material.dart' as entities;
 
 class AppRouter {
   final AuthProvider authProvider;
@@ -105,6 +111,57 @@ class AppRouter {
             ],
           ),
           GoRoute(
+            path: 'grupos',
+            pageBuilder: (context, state) => _buildPageWithSlideTransition(
+              context: context,
+              state: state,
+              child: const GruposListScreen(),
+            ),
+            routes: [
+              GoRoute(
+                path: 'nuevo',
+                pageBuilder: (context, state) => _buildPageWithSlideTransition(
+                  context: context,
+                  state: state,
+                  child: const GrupoFormScreen(),
+                ),
+              ),
+              GoRoute(
+                path: ':id',
+                pageBuilder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return _buildPageWithSlideTransition(
+                    context: context,
+                    state: state,
+                    child: GrupoDetailScreen(grupoId: id),
+                  );
+                },
+              ),
+              GoRoute(
+                path: ':id/editar',
+                pageBuilder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return _buildPageWithSlideTransition(
+                    context: context,
+                    state: state,
+                    child: GrupoFormScreen(grupoId: id),
+                  );
+                },
+              ),
+              GoRoute(
+                path: ':id/alumnos',
+                pageBuilder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return _buildPageWithSlideTransition(
+                    context: context,
+                    state: state,
+                    child: GrupoAlumnosScreen(grupoId: id),
+                  );
+                },
+              ),
+            ],
+          ),
+          GoRoute(
             path: 'calificaciones',
             pageBuilder: (context, state) => _buildPageWithSlideTransition(
               context: context,
@@ -140,6 +197,30 @@ class AppRouter {
                 child: TemaDetailScreen(temaId: id),
               );
             },
+            routes: [
+              GoRoute(
+                path: 'material',
+                pageBuilder: (context, state) {
+                  final materialData = state.extra as entities.Material?;
+                  if (materialData == null) {
+                    return _buildPageWithSlideTransition(
+                      context: context,
+                      state: state,
+                      child: const Scaffold(
+                        body: Center(
+                          child: Text('Error: Material no encontrado'),
+                        ),
+                      ),
+                    );
+                  }
+                  return _buildPageWithSlideTransition(
+                    context: context,
+                    state: state,
+                    child: MaterialDetailScreen(material: materialData),
+                  );
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: 'actividad/:id',

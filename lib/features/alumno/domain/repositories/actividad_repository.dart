@@ -8,6 +8,7 @@ abstract class ActividadRepository {
   Future<Either<Failure, List<Pregunta>>> getPreguntasByActividad(String actividadId);
   Future<Either<Failure, Map<String, dynamic>>> submitActividad({
     required String actividadId,
+    required String alumnoId,
     required Map<String, String> respuestas,
   });
 }

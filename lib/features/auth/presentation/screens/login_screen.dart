@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../providers/auth_provider.dart';
 
@@ -60,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(authProvider.errorMessage!),
-            backgroundColor: AppColors.errorColor,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -69,6 +68,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -79,44 +81,26 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 const SizedBox(height: 40),
                 // Logo
-                Center(
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryColor,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primaryColor.withOpacity(0.3),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.language,
-                      size: 50,
-                      color: AppColors.textLightColor,
-                    ),
-                  ),
+                SizedBox(
+                  width: 150,
+                  height: 150,
+                  child: Image.asset('assets/images/logo.png'),
                 ),
                 const SizedBox(height: 24),
                 // Welcome Text
                 Text(
                   AppStrings.welcomeBack,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                        color: AppColors.primaryColor,
-                        fontWeight: FontWeight.bold,
+                  style: textTheme.displaySmall?.copyWith(
+                        color: colorScheme.primary,
                       ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   AppStrings.appName,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: AppColors.textSecondaryColor,
+                  style: textTheme.titleLarge?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
                       ),
                 ),
                 const SizedBox(height: 48),
@@ -130,10 +114,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: AppStrings.email,
                           hintText: 'ejemplo@correo.com',
-                          prefixIcon: const Icon(Icons.email_outlined),
+                          prefixIcon: Icon(Icons.email_outlined),
                         ),
                         validator: _validateEmail,
                       ),
@@ -169,11 +153,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         builder: (context, authProvider, child) {
                           return SizedBox(
                             width: double.infinity,
-                            height: 50,
                             child: ElevatedButton(
-                              onPressed: authProvider.isLoading
-                                  ? null
-                                  : _handleLogin,
+                              onPressed: authProvider.isLoading ? null : _handleLogin,
                               child: authProvider.isLoading
                                   ? const SizedBox(
                                       height: 20,
@@ -181,20 +162,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
                                         valueColor: AlwaysStoppedAnimation<Color>(
-                                          AppColors.textLightColor,
+                                          Colors.white,
                                         ),
                                       ),
                                     )
-                                  : Text(
-                                      AppStrings.login,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium
-                                          ?.copyWith(
-                                            color: AppColors.textLightColor,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                    ),
+                                  : const Text(AppStrings.login),
                             ),
                           );
                         },
@@ -207,10 +179,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.infoColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    color: colorScheme.primaryContainer.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: AppColors.infoColor.withOpacity(0.3),
+                      color: colorScheme.primaryContainer,
                     ),
                   ),
                   child: Column(
@@ -220,34 +192,33 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Icon(
                             Icons.info_outline,
-                            color: AppColors.infoColor,
+                            color: colorScheme.primary,
                             size: 20,
                           ),
                           const SizedBox(width: 8),
                           Text(
                             'Credenciales de prueba',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall
-                                ?.copyWith(
-                                  color: AppColors.infoColor,
+                            style: textTheme.titleMedium?.copyWith(
+                                  color: colorScheme.primary,
                                   fontWeight: FontWeight.bold,
                                 ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
                       Text(
                         'Administrador:\nadmin@maya.edu / admin123',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        style: textTheme.bodyMedium?.copyWith(
                               fontFamily: 'monospace',
+                              color: colorScheme.onSurface,
                             ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 8),
                       Text(
                         'Alumno:\njuan.pech@alumno.com / alumno123',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        style: textTheme.bodyMedium?.copyWith(
                               fontFamily: 'monospace',
+                              color: colorScheme.onSurface,
                             ),
                       ),
                     ],

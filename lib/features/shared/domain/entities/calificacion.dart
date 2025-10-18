@@ -23,7 +23,15 @@ class Calificacion extends Equatable {
     this.intentos = 1,
   });
 
-  double get porcentaje => (puntuacionObtenida / puntuacionMaxima) * 100;
+  double get porcentaje {
+    if (puntuacionMaxima == 0) {
+      print('Warning: puntuacionMaxima is 0, returning 0.0');
+      return 0.0;
+    }
+    final result = (puntuacionObtenida / puntuacionMaxima) * 100;
+    print('Calculating percentage: $puntuacionObtenida / $puntuacionMaxima * 100 = $result');
+    return result;
+  }
 
   @override
   List<Object?> get props => [

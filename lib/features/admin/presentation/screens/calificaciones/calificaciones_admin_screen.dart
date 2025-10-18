@@ -109,7 +109,7 @@ class _CalificacionesAdminScreenState extends State<CalificacionesAdminScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Buscar por actividad o tema...',
+                hintText: 'Buscar por actividad, tema o alumno...',
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
@@ -262,10 +262,13 @@ class _CalificacionesAdminScreenState extends State<CalificacionesAdminScreen> {
                       final cal = calificaciones[index];
                       final isAprobado = cal.porcentaje >= 70;
 
+                      final alumno = context.read<CalificacionAdminProvider>().getAlumnoById(cal.alumnoId);
+                      
                       return Card(
                         margin: const EdgeInsets.only(bottom: 12),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.all(12),
+                        child: ExpansionTile(
+                          tilePadding: const EdgeInsets.all(12),
+                          childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
                           leading: CircleAvatar(
                             backgroundColor: isAprobado
                                 ? AppColors.successColor
@@ -289,6 +292,23 @@ class _CalificacionesAdminScreenState extends State<CalificacionesAdminScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(height: 4),
+                              // Información del alumno
+                              Row(
+                                children: [
+                                  const Icon(Icons.person, size: 14, color: AppColors.primaryColor),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      alumno?.nombreCompleto ?? 'Alumno no encontrado',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: alumno != null ? AppColors.primaryColor : AppColors.errorColor,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
                               Row(
                                 children: [
                                   const Icon(Icons.book, size: 14),
@@ -303,14 +323,6 @@ class _CalificacionesAdminScreenState extends State<CalificacionesAdminScreen> {
                                   const SizedBox(width: 4),
                                   Text(
                                       '${cal.puntuacionObtenida}/${cal.puntuacionMaxima} puntos'),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  const Icon(Icons.refresh, size: 14),
-                                  const SizedBox(width: 4),
-                                  Text('${cal.intentos} intentos'),
                                   const Spacer(),
                                   Text(
                                     DateFormat('dd/MM/yyyy')
@@ -331,6 +343,83 @@ class _CalificacionesAdminScreenState extends State<CalificacionesAdminScreen> {
                                 : AppColors.errorColor,
                             size: 32,
                           ),
+                          children: [
+                            // Información detallada del alumno
+                            if (alumno != null) ...[
+                              Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryColor.withOpacity(0.05),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Información del Alumno',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.primaryColor,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.email, size: 14),
+                                        const SizedBox(width: 8),
+                                        Text(alumno.email),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.school, size: 14),
+                                        const SizedBox(width: 8),
+                                        Text('Nivel: ${_formatNivel(alumno.nivel)}'),
+                                      ],
+                                    ),
+                                    if (alumno.grupoNombre != null) ...[
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.group, size: 14),
+                                          const SizedBox(width: 8),
+                                          Text('Grupo: ${alumno.grupoNombre}'),
+                                        ],
+                                      ),
+                                    ],
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.refresh, size: 14),
+                                        const SizedBox(width: 8),
+                                        Text('${cal.intentos} intentos'),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ] else ...[
+                              Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: AppColors.errorColor.withOpacity(0.05),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.warning, color: AppColors.errorColor, size: 16),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'No se pudo cargar la información del alumno',
+                                      style: TextStyle(color: AppColors.errorColor),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       );
                     },
@@ -451,6 +540,19 @@ class _CalificacionesAdminScreenState extends State<CalificacionesAdminScreen> {
         ],
       ),
     );
+  }
+
+  String _formatNivel(String nivel) {
+    switch (nivel.toLowerCase()) {
+      case 'basico':
+        return 'Básico';
+      case 'intermedio':
+        return 'Intermedio';
+      case 'avanzado':
+        return 'Avanzado';
+      default:
+        return nivel;
+    }
   }
 }
 

@@ -131,7 +131,10 @@ class DependencyInjection {
 
     // Alumno Providers
     temaProvider = TemaProvider(temaRepository: temaRepository);
-    actividadProvider = ActividadProvider(actividadRepository: actividadRepository);
+    actividadProvider = ActividadProvider(
+      actividadRepository: actividadRepository,
+      authProvider: authProvider,
+    );
     calificacionProvider = CalificacionProvider(calificacionRepository: calificacionRepository);
 
     // Admin Data Sources
@@ -144,7 +147,13 @@ class DependencyInjection {
 
     // Admin Providers
     alumnoProvider = AlumnoProvider(repository: alumnoRepository);
-    grupoProvider = GrupoProvider(repository: grupoRepository);
-    calificacionAdminProvider = CalificacionAdminProvider(repository: calificacionAdminRepository);
+    grupoProvider = GrupoProvider(
+      repository: grupoRepository,
+      alumnoRepository: alumnoRepository,
+    );
+    calificacionAdminProvider = CalificacionAdminProvider(
+      repository: calificacionAdminRepository,
+      alumnoRepository: alumnoRepository,
+    );
   }
 }

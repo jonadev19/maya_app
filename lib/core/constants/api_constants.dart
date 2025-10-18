@@ -52,6 +52,9 @@ class ApiConstants {
   // Actividades Endpoints
   static const String actividades = '/actividades/';
 
+  // Preguntas Endpoints
+  static const String preguntas = '/preguntas/';
+
   // Intentos Endpoints
   static const String intentos = '/intentos/';
   static const String crearIntento = '/intentos/crear/';

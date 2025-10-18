@@ -16,6 +16,7 @@ class GrupoModel extends Grupo {
       nombre: (json['nombre'] as String?) ?? '',
       nivel: (json['nivel'] as String?) ?? 'basico',
       descripcion: json['descripcion'] as String?,
+      // El backend no envía cantidad_alumnos, se calculará después
       cantidadAlumnos: json['cantidad_alumnos'] is String ? int.parse(json['cantidad_alumnos']) : (json['cantidad_alumnos'] as int? ?? 0),
       activo: json['activo'] as bool? ?? true,
     );

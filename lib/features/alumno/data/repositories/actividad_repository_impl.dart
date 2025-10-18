@@ -38,11 +38,13 @@ class ActividadRepositoryImpl implements ActividadRepository {
   @override
   Future<Either<Failure, Map<String, dynamic>>> submitActividad({
     required String actividadId,
+    required String alumnoId,
     required Map<String, String> respuestas,
   }) async {
     try {
       final result = await remoteDataSource.submitActividad(
         actividadId: actividadId,
+        alumnoId: alumnoId,
         respuestas: respuestas,
       );
       return Right(result);

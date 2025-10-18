@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/tema_provider.dart';
@@ -27,48 +26,36 @@ class _AlumnoHomeScreenState extends State<AlumnoHomeScreen> {
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.user;
     final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        toolbarHeight: 0,
-        backgroundColor: colorScheme.surface,
-        elevation: 0,
+        title: Text(
+          AppStrings.appName,
+          style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Notificaciones en desarrollo')),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout_outlined),
+            onPressed: () async {
+              await authProvider.logout();
+            },
+            tooltip: AppStrings.logout,
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: RefreshIndicator(
-        onRefresh: () async {
-          await context.read<TemaProvider>().loadTemas();
-        },
+        onRefresh: () => context.read<TemaProvider>().loadTemas(),
         child: CustomScrollView(
           slivers: [
-            SliverAppBar(
-              pinned: true,
-              backgroundColor: colorScheme.surface,
-              automaticallyImplyLeading: false,
-              title: Text(
-                AppStrings.appName,
-                style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.notifications_outlined),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Notificaciones en desarrollo')),
-                    );
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.logout_outlined),
-                  onPressed: () async {
-                    await authProvider.logout();
-                  },
-                  tooltip: AppStrings.logout,
-                ),
-                const SizedBox(width: 8),
-              ],
-            ),
             SliverList(
               delegate: SliverChildListDelegate(
                 [
@@ -96,7 +83,6 @@ class _AlumnoHomeScreenState extends State<AlumnoHomeScreen> {
 
 // --- WIDGETS REDISEÑADOS ---
 
-// Header de Bienvenida
 class _Header extends StatelessWidget {
   final String nombre;
   final String grupo;
@@ -175,7 +161,6 @@ class _Header extends StatelessWidget {
   }
 }
 
-// Sección de Acciones Rápidas
 class _QuickActions extends StatelessWidget {
   const _QuickActions();
 
@@ -195,7 +180,7 @@ class _QuickActions extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         SizedBox(
-          height: 130,
+          height: 120,
           child: ListView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -204,7 +189,6 @@ class _QuickActions extends StatelessWidget {
                 title: AppStrings.misCalificaciones,
                 subtitle: 'Ver tu progreso',
                 icon: Icons.bar_chart_rounded,
-                color: AppColors.accentColor,
                 onTap: () => context.push('/alumno/calificaciones'),
               ),
               const SizedBox(width: 12),
@@ -212,16 +196,16 @@ class _QuickActions extends StatelessWidget {
                 title: AppStrings.miPerfil,
                 subtitle: 'Editar tus datos',
                 icon: Icons.person_outline_rounded,
-                color: AppColors.primaryColor,
                 onTap: () => context.push('/alumno/perfil'),
+                isPrimary: false,
               ),
               const SizedBox(width: 12),
               _QuickActionCard(
                 title: 'Estadísticas',
                 subtitle: 'Revisa tu avance',
                 icon: Icons.insights_rounded,
-                color: AppColors.successColor,
                 onTap: () {},
+                isPrimary: false,
               ),
             ],
           ),
@@ -231,35 +215,39 @@ class _QuickActions extends StatelessWidget {
   }
 }
 
-// Tarjeta para Acciones Rápidas
 class _QuickActionCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
-  final Color color;
   final VoidCallback onTap;
+  final bool isPrimary;
 
   const _QuickActionCard({
     required this.title,
     required this.subtitle,
     required this.icon,
-    required this.color,
     required this.onTap,
+    this.isPrimary = true,
   });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
-    return AspectRatio(
-      aspectRatio: 1.5,
+    final bgColor = isPrimary ? colorScheme.primary : colorScheme.secondaryContainer;
+    final iconColor = isPrimary ? colorScheme.onPrimary : colorScheme.onSecondaryContainer;
+    final titleColor = isPrimary ? colorScheme.onPrimary : colorScheme.onSurface;
+    final subtitleColor = isPrimary ? colorScheme.onPrimary.withOpacity(0.8) : colorScheme.onSurfaceVariant;
+
+    return SizedBox(
+      width: 140,
       child: Card(
         elevation: 0,
         clipBehavior: Clip.antiAlias,
-        color: color.withOpacity(0.1),
+        color: bgColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: color.withOpacity(0.2), width: 1),
         ),
         child: InkWell(
           onTap: onTap,
@@ -269,25 +257,28 @@ class _QuickActionCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(icon, color: color, size: 32),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
+                Icon(icon, color: iconColor, size: 28),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: titleColor,
+                        ),
                       ),
-                    ),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: colorScheme.onSurfaceVariant,
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: subtitleColor,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -298,13 +289,13 @@ class _QuickActionCard extends StatelessWidget {
   }
 }
 
-// Sección de Temas
 class _TemasSection extends StatelessWidget {
   const _TemasSection();
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -341,7 +332,7 @@ class _TemasSection extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 32),
                     child: Column(
                       children: [
-                        const Icon(Icons.cloud_off_rounded, size: 64, color: AppColors.errorColor),
+                        Icon(Icons.cloud_off_rounded, size: 64, color: colorScheme.error),
                         const SizedBox(height: 16),
                         Text(
                           temaProvider.errorMessage ?? 'Error al cargar temas',
@@ -360,16 +351,16 @@ class _TemasSection extends StatelessWidget {
               }
 
               if (temaProvider.temas.isEmpty) {
-                return const Center(
+                return Center(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 48),
+                    padding: const EdgeInsets.symmetric(vertical: 48),
                     child: Column(
                       children: [
-                        Icon(Icons.folder_off_outlined, size: 64, color: AppColors.textSecondaryColor),
-                        SizedBox(height: 16),
+                        Icon(Icons.folder_off_outlined, size: 64, color: colorScheme.onSurfaceVariant),
+                        const SizedBox(height: 16),
                         Text(
                           'No hay temas disponibles',
-                          style: TextStyle(fontSize: 16, color: AppColors.textSecondaryColor),
+                          style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurfaceVariant),
                         ),
                       ],
                     ),
@@ -390,35 +381,28 @@ class _TemasSection extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final tema = temaProvider.temas[index];
                   IconData icon;
-                  Color color;
 
                   switch (tema.nombre.toLowerCase()) {
                     case 'números':
                       icon = Icons.calculate_outlined;
-                      color = AppColors.basicLevelColor;
                       break;
                     case 'comidas':
                       icon = Icons.restaurant_menu_outlined;
-                      color = AppColors.intermediateLevelColor;
                       break;
                     case 'objetos cotidianos':
                       icon = Icons.chair_outlined;
-                      color = AppColors.advancedLevelColor;
                       break;
                     case 'animales':
                       icon = Icons.pets_outlined;
-                      color = AppColors.secondaryColor;
                       break;
                     default:
                       icon = Icons.school_outlined;
-                      color = AppColors.accentColor;
                   }
 
                   return _TemaGridCard(
                     title: tema.nombre,
-                    subtitle: tema.descripcion ?? 'Aprende vocabulario',
+                    subtitle: tema.descripcion.isNotEmpty ? tema.descripcion : 'Aprende vocabulario',
                     icon: icon,
-                    color: color,
                     onTap: () {
                       context.push('/alumno/tema/${tema.id}');
                     },
@@ -433,19 +417,16 @@ class _TemasSection extends StatelessWidget {
   }
 }
 
-// Tarjeta para el Grid de Temas
 class _TemaGridCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
-  final Color color;
   final VoidCallback onTap;
 
   const _TemaGridCard({
     required this.title,
     required this.subtitle,
     required this.icon,
-    required this.color,
     required this.onTap,
   });
 
@@ -455,8 +436,7 @@ class _TemaGridCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Card(
-      elevation: 0.5,
-      shadowColor: color.withOpacity(0.1),
+      elevation: 0,
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
@@ -469,8 +449,8 @@ class _TemaGridCard extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                color.withOpacity(0.15),
-                color.withOpacity(0.05),
+                colorScheme.primaryContainer.withOpacity(0.2),
+                colorScheme.primaryContainer.withOpacity(0.05),
               ],
             ),
           ),
@@ -486,7 +466,7 @@ class _TemaGridCard extends StatelessWidget {
                     color: colorScheme.surface.withOpacity(0.8),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(icon, color: color, size: 28),
+                  child: Icon(icon, color: colorScheme.primary, size: 28),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -516,7 +496,7 @@ class _TemaGridCard extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.arrow_forward_rounded,
-                      color: color,
+                      color: colorScheme.primary,
                       size: 20,
                     ),
                   ],

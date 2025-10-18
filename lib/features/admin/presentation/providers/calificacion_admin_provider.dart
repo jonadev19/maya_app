@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import '../../../shared/domain/entities/calificacion.dart';
+import '../../../shared/domain/entities/alumno.dart';
 import '../../domain/repositories/calificacion_admin_repository.dart';
+import '../../domain/repositories/alumno_repository.dart';
 
 enum CalificacionAdminState {
   initial,
@@ -11,15 +13,21 @@ enum CalificacionAdminState {
 
 class CalificacionAdminProvider extends ChangeNotifier {
   final CalificacionAdminRepository repository;
+  final AlumnoRepository alumnoRepository;
 
-  CalificacionAdminProvider({required this.repository});
+  CalificacionAdminProvider({
+    required this.repository,
+    required this.alumnoRepository,
+  });
 
   CalificacionAdminState _state = CalificacionAdminState.initial;
   List<Calificacion> _calificaciones = [];
+  Map<String, Alumno> _alumnos = {};
   String? _errorMessage;
 
   CalificacionAdminState get state => _state;
   List<Calificacion> get calificaciones => _calificaciones;
+  Map<String, Alumno> get alumnos => _alumnos;
   String? get errorMessage => _errorMessage;
 
   // Cargar todas las calificaciones
@@ -29,14 +37,18 @@ class CalificacionAdminProvider extends ChangeNotifier {
     notifyListeners();
 
     final result = await repository.getTodasCalificaciones();
-    result.fold(
+    await result.fold(
       (failure) {
         _state = CalificacionAdminState.error;
         _errorMessage = failure.message;
         notifyListeners();
       },
-      (calificaciones) {
+      (calificaciones) async {
         _calificaciones = calificaciones;
+        
+        // Cargar información de alumnos
+        await _loadAlumnosData();
+        
         _state = CalificacionAdminState.loaded;
         notifyListeners();
       },
@@ -50,14 +62,18 @@ class CalificacionAdminProvider extends ChangeNotifier {
     notifyListeners();
 
     final result = await repository.getCalificacionesByAlumno(alumnoId);
-    result.fold(
+    await result.fold(
       (failure) {
         _state = CalificacionAdminState.error;
         _errorMessage = failure.message;
         notifyListeners();
       },
-      (calificaciones) {
+      (calificaciones) async {
         _calificaciones = calificaciones;
+        
+        // Cargar información de alumnos
+        await _loadAlumnosData();
+        
         _state = CalificacionAdminState.loaded;
         notifyListeners();
       },
@@ -75,10 +91,10 @@ class CalificacionAdminProvider extends ChangeNotifier {
   List<Calificacion> searchByAlumno(String query) {
     final lowerQuery = query.toLowerCase();
     return _calificaciones.where((c) {
-      // Asumiendo que el nombre del alumno viene en algún campo
-      // Si no existe, necesitarás agregarlo al modelo
+      final alumno = _alumnos[c.alumnoId];
       return c.actividadTitulo.toLowerCase().contains(lowerQuery) ||
-          c.temaNombre.toLowerCase().contains(lowerQuery);
+          c.temaNombre.toLowerCase().contains(lowerQuery) ||
+          (alumno?.nombreCompleto.toLowerCase().contains(lowerQuery) ?? false);
     }).toList();
   }
 
@@ -124,6 +140,30 @@ class CalificacionAdminProvider extends ChangeNotifier {
       grouped[cal.alumnoId]!.add(cal);
     }
     return grouped;
+  }
+
+  // Cargar datos de alumnos
+  Future<void> _loadAlumnosData() async {
+    final alumnosIds = _calificaciones.map((c) => c.alumnoId).toSet();
+    
+    for (final alumnoId in alumnosIds) {
+      if (!_alumnos.containsKey(alumnoId)) {
+        final result = await alumnoRepository.getAlumnoById(alumnoId);
+        result.fold(
+          (failure) {
+            // Si no se puede cargar un alumno, simplemente lo omitimos
+          },
+          (alumno) {
+            _alumnos[alumnoId] = alumno;
+          },
+        );
+      }
+    }
+  }
+
+  // Obtener alumno por ID
+  Alumno? getAlumnoById(String alumnoId) {
+    return _alumnos[alumnoId];
   }
 
   // Limpiar error

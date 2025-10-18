@@ -34,21 +34,29 @@ class _AlumnoFormScreenState extends State<AlumnoFormScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Cargar grupos disponibles
-      context.read<GrupoProvider>().loadGrupos();
-
-      // Si es modo edición, cargar datos del alumno
-      if (_isEditMode) {
-        _loadAlumnoData();
-      }
+      _initializeScreen();
     });
   }
 
-  Future<void> _loadAlumnoData() async {
+  Future<void> _initializeScreen() async {
     setState(() {
       _isLoading = true;
     });
 
+    // Cargar grupos primero para evitar problemas con el dropdown
+    await context.read<GrupoProvider>().loadGrupos();
+    
+    // Si es modo edición, cargar datos del alumno después de cargar grupos
+    if (_isEditMode) {
+      await _loadAlumnoData();
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _loadAlumnoData() async {
     final provider = context.read<AlumnoProvider>();
     await provider.loadAlumnoById(widget.alumnoId!);
 
@@ -264,12 +272,29 @@ class _AlumnoFormScreenState extends State<AlumnoFormScreen> {
                             Consumer<GrupoProvider>(
                               builder: (context, grupoProvider, _) {
                                 final grupos = grupoProvider.grupos;
+                                
+                                // Verificar si el grupo actual existe en la lista
+                                final grupoExiste = _grupoId == null || 
+                                    grupos.any((grupo) => grupo.id == _grupoId);
+                                
+                                // Si el grupo no existe, resetear a null
+                                if (!grupoExiste && _grupoId != null) {
+                                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                                    setState(() {
+                                      _grupoId = null;
+                                    });
+                                  });
+                                }
 
                                 return DropdownButtonFormField<String>(
-                                  value: _grupoId,
-                                  decoration: const InputDecoration(
+                                  value: grupoExiste ? _grupoId : null,
+                                  decoration: InputDecoration(
                                     labelText: 'Grupo (opcional)',
-                                    prefixIcon: Icon(Icons.group),
+                                    prefixIcon: const Icon(Icons.group),
+                                    helperText: !grupoExiste && _grupoId != null 
+                                        ? 'El grupo asignado ya no existe'
+                                        : null,
+                                    helperStyle: const TextStyle(color: AppColors.errorColor),
                                   ),
                                   items: [
                                     const DropdownMenuItem(

@@ -11,16 +11,40 @@ class PreguntaModel extends Pregunta {
   });
 
   factory PreguntaModel.fromJson(Map<String, dynamic> json) {
+    // Adaptarse a la nueva estructura de la API Django
     return PreguntaModel(
       id: json['id'].toString(),
-      actividadId: json['actividad_id'].toString(),
-      textoPregunta: (json['texto_pregunta'] as String?) ?? '',
+      actividadId: '', // No viene en la respuesta individual
+      textoPregunta: (json['texto'] as String?) ?? '', // Cambio de 'texto_pregunta' a 'texto'
       tipo: (json['tipo'] as String?) ?? 'opcion_multiple',
-      opciones: (json['opciones'] as List?)
-          ?.map((opcion) => OpcionRespuestaModel.fromJson(opcion))
-          .toList() ?? [],
+      opciones: _parseOpciones(json),
       puntos: json['puntos'] is String ? int.parse(json['puntos']) : (json['puntos'] as int? ?? 1),
     );
+  }
+
+  // Método helper para parsear opciones desde la nueva estructura
+  static List<OpcionRespuesta> _parseOpciones(Map<String, dynamic> json) {
+    final opciones = json['opciones'] as List?;
+    final respuestaCorrecta = json['respuesta_correcta'] as String?;
+    
+    if (opciones == null) return [];
+    
+    // Si opciones es un array de strings, convertir a OpcionRespuesta
+    if (opciones.isNotEmpty && opciones.first is String) {
+      return opciones.asMap().entries.map((entry) {
+        final opcion = entry.value as String;
+        return OpcionRespuesta(
+          id: entry.key.toString(),
+          textoOpcion: opcion,
+          esCorrecta: opcion == respuestaCorrecta,
+        );
+      }).toList();
+    }
+    
+    // Si ya son objetos, usar el parser original
+    return opciones
+        .map((opcion) => OpcionRespuestaModel.fromJson(opcion))
+        .toList();
   }
 
   Map<String, dynamic> toJson() {

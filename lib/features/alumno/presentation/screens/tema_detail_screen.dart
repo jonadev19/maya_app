@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../providers/tema_provider.dart';
 
 class TemaDetailScreen extends StatefulWidget {
@@ -17,7 +15,6 @@ class TemaDetailScreen extends StatefulWidget {
 class _TemaDetailScreenState extends State<TemaDetailScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
@@ -31,22 +28,21 @@ class _TemaDetailScreenState extends State<TemaDetailScreen>
   @override
   void dispose() {
     _tabController.dispose();
-    _audioPlayer.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: Consumer<TemaProvider>(
           builder: (context, provider, _) {
             return Text(
               provider.currentTema?.nombre ?? 'Cargando...',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             );
           },
         ),
@@ -54,21 +50,15 @@ class _TemaDetailScreenState extends State<TemaDetailScreen>
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
           child: Container(
-            color: Theme.of(context).colorScheme.surface,
+            color: colorScheme.surface,
             child: TabBar(
               controller: _tabController,
-              labelColor: AppColors.primaryColor,
-              unselectedLabelColor: AppColors.textSecondaryColor,
-              indicatorColor: AppColors.primaryColor,
+              labelColor: colorScheme.primary,
+              unselectedLabelColor: colorScheme.onSurfaceVariant,
+              indicatorColor: colorScheme.primary,
               indicatorWeight: 3,
-              labelStyle: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-              unselectedLabelStyle: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.normal,
-              ),
+              labelStyle: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+              unselectedLabelStyle: textTheme.titleSmall,
               tabs: const [
                 Tab(text: 'Vocabulario'),
                 Tab(text: 'Materiales'),
@@ -89,8 +79,7 @@ class _TemaDetailScreenState extends State<TemaDetailScreen>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline,
-                      size: 60, color: AppColors.errorColor),
+                  Icon(Icons.error_outline, size: 60, color: colorScheme.error),
                   const SizedBox(height: 16),
                   Text(provider.errorMessage ?? 'Error desconocido'),
                   const SizedBox(height: 16),
@@ -130,6 +119,9 @@ class _TemaDetailScreenState extends State<TemaDetailScreen>
       itemCount: provider.palabras.length,
       itemBuilder: (context, index) {
         final palabra = provider.palabras[index];
+        final textTheme = Theme.of(context).textTheme;
+        final colorScheme = Theme.of(context).colorScheme;
+
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
           child: Padding(
@@ -148,7 +140,7 @@ class _TemaDetailScreenState extends State<TemaDetailScreen>
                         return Container(
                           width: 80,
                           height: 80,
-                          color: AppColors.basicLevelColor.withOpacity(0.2),
+                          color: colorScheme.secondaryContainer,
                           child: const Icon(Icons.image_not_supported),
                         );
                       },
@@ -161,9 +153,9 @@ class _TemaDetailScreenState extends State<TemaDetailScreen>
                     children: [
                       Text(
                         palabra.palabraMaya,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        style: textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: AppColors.primaryColor,
+                              color: colorScheme.primary,
                             ),
                       ),
                       const SizedBox(height: 4),
@@ -171,9 +163,9 @@ class _TemaDetailScreenState extends State<TemaDetailScreen>
                         palabra.traduccionEspanol.isNotEmpty
                             ? 'Significado: ${palabra.traduccionEspanol}'
                             : 'Significado: (No disponible)',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        style: textTheme.bodyLarge?.copyWith(
                               color: palabra.traduccionEspanol.isEmpty
-                                  ? AppColors.textSecondaryColor
+                                  ? colorScheme.onSurfaceVariant
                                   : null,
                             ),
                       ),
@@ -183,33 +175,15 @@ class _TemaDetailScreenState extends State<TemaDetailScreen>
                         Text(
                           'Pronunciación: /${palabra.pronunciacion}/',
                           style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                              textTheme.bodySmall?.copyWith(
                                     fontStyle: FontStyle.italic,
-                                    color: AppColors.textSecondaryColor,
+                                    color: colorScheme.onSurfaceVariant,
                                   ),
                         ),
                       ],
                     ],
                   ),
                 ),
-                if (palabra.audioUrl != null)
-                  IconButton(
-                    icon: const Icon(Icons.volume_up),
-                    color: AppColors.accentColor,
-                    onPressed: () async {
-                      try {
-                        await _audioPlayer.play(UrlSource(palabra.audioUrl!));
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Error al reproducir audio'),
-                            ),
-                          );
-                        }
-                      }
-                    },
-                  ),
               ],
             ),
           ),
@@ -230,25 +204,26 @@ class _TemaDetailScreenState extends State<TemaDetailScreen>
       itemCount: provider.materiales.length,
       itemBuilder: (context, index) {
         final material = provider.materiales[index];
+        final colorScheme = Theme.of(context).colorScheme;
         IconData icon;
         Color color;
 
         switch (material.tipo) {
           case 'audio':
             icon = Icons.headphones;
-            color = AppColors.accentColor;
+            color = colorScheme.secondary;
             break;
           case 'video':
             icon = Icons.play_circle_outline;
-            color = AppColors.secondaryColor;
+            color = colorScheme.primary;
             break;
           case 'imagen':
             icon = Icons.image;
-            color = AppColors.basicLevelColor;
+            color = colorScheme.tertiary;
             break;
           default:
             icon = Icons.description;
-            color = AppColors.primaryColor;
+            color = colorScheme.onSurfaceVariant;
         }
 
         return Card(
@@ -266,12 +241,7 @@ class _TemaDetailScreenState extends State<TemaDetailScreen>
             ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              // TODO: Navigate to material detail screen
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Vista de material en desarrollo'),
-                ),
-              );
+              context.go('/alumno/tema/${widget.temaId}/material', extra: material);
             },
           ),
         );
@@ -280,6 +250,9 @@ class _TemaDetailScreenState extends State<TemaDetailScreen>
   }
 
   Widget _buildActividadesTab(TemaProvider provider) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     if (provider.actividades.isEmpty) {
       return const Center(
         child: Text('No hay actividades disponibles para este tema'),
@@ -314,8 +287,8 @@ class _TemaDetailScreenState extends State<TemaDetailScreen>
           margin: const EdgeInsets.only(bottom: 12),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: AppColors.accentColor.withOpacity(0.1),
-              child: Icon(icon, color: AppColors.accentColor),
+              backgroundColor: colorScheme.secondaryContainer,
+              child: Icon(icon, color: colorScheme.onSecondaryContainer),
             ),
             title: Text(actividad.titulo),
             subtitle: Column(
@@ -325,20 +298,18 @@ class _TemaDetailScreenState extends State<TemaDetailScreen>
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.timer,
-                        size: 16, color: AppColors.textSecondaryColor),
+                    Icon(Icons.timer, size: 16, color: colorScheme.onSurfaceVariant),
                     const SizedBox(width: 4),
                     Text(
                       '${actividad.duracionMinutos} min',
-                      style: Theme.of(context).textTheme.bodySmall,
+                      style: textTheme.bodySmall,
                     ),
                     const SizedBox(width: 16),
-                    Icon(Icons.star,
-                        size: 16, color: AppColors.textSecondaryColor),
+                    Icon(Icons.star, size: 16, color: colorScheme.onSurfaceVariant),
                     const SizedBox(width: 4),
                     Text(
                       '${actividad.puntuacionMaxima} pts',
-                      style: Theme.of(context).textTheme.bodySmall,
+                      style: textTheme.bodySmall,
                     ),
                   ],
                 ),

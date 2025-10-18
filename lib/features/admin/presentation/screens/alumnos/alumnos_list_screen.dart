@@ -33,6 +33,9 @@ class _AlumnosListScreenState extends State<AlumnosListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Gestión de Alumnos'),
@@ -64,9 +67,6 @@ class _AlumnosListScreenState extends State<AlumnosListScreen> {
                         },
                       )
                     : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
               ),
               onChanged: (value) {
                 setState(() {
@@ -109,15 +109,11 @@ class _AlumnosListScreenState extends State<AlumnosListScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.error_outline,
-                              size: 60, color: AppColors.errorColor),
+                          Icon(Icons.error_outline, size: 60, color: colorScheme.error),
                           const SizedBox(height: 16),
                           Text(
                             'Error al cargar alumnos',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: textTheme.titleLarge,
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 8),
@@ -131,9 +127,7 @@ class _AlumnosListScreenState extends State<AlumnosListScreen> {
                           ),
                           const SizedBox(height: 16),
                           ElevatedButton(
-                            onPressed: () {
-                              provider.loadAlumnos();
-                            },
+                            onPressed: () => provider.loadAlumnos(),
                             child: const Text('Reintentar'),
                           ),
                         ],
@@ -150,9 +144,7 @@ class _AlumnosListScreenState extends State<AlumnosListScreen> {
                 }
 
                 if (_filtroNivel != null) {
-                  alumnos = alumnos
-                      .where((a) => a.nivel == _filtroNivel)
-                      .toList();
+                  alumnos = alumnos.where((a) => a.nivel == _filtroNivel).toList();
                 }
 
                 if (alumnos.isEmpty) {
@@ -160,18 +152,19 @@ class _AlumnosListScreenState extends State<AlumnosListScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.people_outline,
-                            size: 80, color: Colors.grey),
+                        Icon(Icons.people_outline, size: 80, color: colorScheme.onSurfaceVariant),
                         const SizedBox(height: 16),
                         Text(
                           _searchQuery.isNotEmpty || _filtroNivel != null
                               ? 'No se encontraron alumnos'
                               : 'No hay alumnos registrados',
+                          style: textTheme.titleMedium,
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           'Agrega un nuevo alumno con el botón +',
                           textAlign: TextAlign.center,
+                          style: textTheme.bodyMedium,
                         ),
                       ],
                     ),
@@ -185,31 +178,30 @@ class _AlumnosListScreenState extends State<AlumnosListScreen> {
                     itemCount: alumnos.length,
                     itemBuilder: (context, index) {
                       final alumno = alumnos[index];
+                      final nivelColor = _getNivelColor(alumno.nivel);
                       return Card(
                         margin: const EdgeInsets.only(bottom: 12),
                         child: ListTile(
                           contentPadding: const EdgeInsets.all(12),
                           leading: CircleAvatar(
-                            backgroundColor: _getNivelColor(alumno.nivel),
+                            backgroundColor: nivelColor,
                             child: Text(
                               alumno.nombre[0].toUpperCase(),
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: colorScheme.onPrimary,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                           title: Text(
                             alumno.nombreCompleto,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(height: 4),
-                              Text(alumno.email),
+                              Text(alumno.email, style: textTheme.bodyMedium),
                               const SizedBox(height: 4),
                               Row(
                                 children: [
@@ -219,15 +211,13 @@ class _AlumnosListScreenState extends State<AlumnosListScreen> {
                                       vertical: 2,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: _getNivelColor(alumno.nivel)
-                                          .withOpacity(0.2),
+                                      color: nivelColor.withOpacity(0.2),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Text(
                                       _formatNivel(alumno.nivel),
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: _getNivelColor(alumno.nivel),
+                                      style: textTheme.labelSmall?.copyWith(
+                                        color: nivelColor,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -235,28 +225,15 @@ class _AlumnosListScreenState extends State<AlumnosListScreen> {
                                   if (alumno.grupoNombre != null) ...[
                                     const SizedBox(width: 8),
                                     Chip(
-                                      label: Text(
-                                        'Grupo ${alumno.grupoNombre}',
-                                        style: const TextStyle(fontSize: 12),
-                                      ),
-                                      materialTapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
+                                      label: Text('Grupo ${alumno.grupoNombre}'),
                                       padding: EdgeInsets.zero,
-                                      visualDensity: VisualDensity.compact,
                                     ),
                                   ],
                                   const Spacer(),
                                   if (!alumno.activo)
                                     const Chip(
-                                      label: Text(
-                                        'Inactivo',
-                                        style: TextStyle(fontSize: 12),
-                                      ),
+                                      label: Text('Inactivo'),
                                       backgroundColor: Colors.grey,
-                                      materialTapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                      padding: EdgeInsets.zero,
-                                      visualDensity: VisualDensity.compact,
                                     ),
                                 ],
                               ),
@@ -274,13 +251,13 @@ class _AlumnosListScreenState extends State<AlumnosListScreen> {
                                   ],
                                 ),
                               ),
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'delete',
                                 child: Row(
                                   children: [
-                                    Icon(Icons.delete, size: 20, color: AppColors.errorColor),
-                                    SizedBox(width: 8),
-                                    Text('Eliminar', style: TextStyle(color: AppColors.errorColor)),
+                                    Icon(Icons.delete, size: 20, color: colorScheme.error),
+                                    const SizedBox(width: 8),
+                                    Text('Eliminar', style: TextStyle(color: colorScheme.error)),
                                   ],
                                 ),
                               ),
@@ -306,12 +283,12 @@ class _AlumnosListScreenState extends State<AlumnosListScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
         onPressed: () {
           context.push('/admin/alumnos/create');
         },
-        icon: const Icon(Icons.person_add),
-        label: const Text('Nuevo Alumno'),
+        tooltip: 'Nuevo Alumno',
+        child: const Icon(Icons.person_add),
       ),
     );
   }
@@ -387,26 +364,24 @@ class _AlumnosListScreenState extends State<AlumnosListScreen> {
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context);
               final provider = context.read<AlumnoProvider>();
               final success = await provider.deleteAlumno(id);
-
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      success
-                          ? 'Alumno eliminado correctamente'
-                          : 'Error al eliminar alumno: ${provider.errorMessage}',
-                    ),
-                    backgroundColor: success ? AppColors.successColor : AppColors.errorColor,
+              if (!mounted) return;
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    success
+                        ? 'Alumno eliminado correctamente'
+                        : 'Error al eliminar alumno: ${provider.errorMessage}',
                   ),
-                );
-              }
+                  backgroundColor: success ? AppColors.successColor : AppColors.errorColor,
+                ),
+              );
             },
-            child: const Text(
+            child: Text(
               'Eliminar',
-              style: TextStyle(color: AppColors.errorColor),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ),
         ],
@@ -417,11 +392,11 @@ class _AlumnosListScreenState extends State<AlumnosListScreen> {
   Color _getNivelColor(String nivel) {
     switch (nivel.toLowerCase()) {
       case 'basico':
-        return AppColors.nivelBasicoColor;
+        return AppColors.basicLevelColor;
       case 'intermedio':
-        return AppColors.nivelIntermedioColor;
+        return AppColors.intermediateLevelColor;
       case 'avanzado':
-        return AppColors.nivelAvanzadoColor;
+        return AppColors.advancedLevelColor;
       default:
         return Colors.grey;
     }
