@@ -1,11 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../providers/tema_provider.dart';
 
-class AlumnoHomeScreen extends StatelessWidget {
+class AlumnoHomeScreen extends StatefulWidget {
   const AlumnoHomeScreen({super.key});
+
+  @override
+  State<AlumnoHomeScreen> createState() => _AlumnoHomeScreenState();
+}
+
+class _AlumnoHomeScreenState extends State<AlumnoHomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<TemaProvider>().loadTemas();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,62 +100,84 @@ class AlumnoHomeScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
-            GridView.count(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                _TemaCard(
-                  icon: Icons.numbers,
-                  title: AppStrings.numeros,
-                  color: AppColors.basicLevelColor,
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Módulo en desarrollo'),
-                      ),
+            Consumer<TemaProvider>(
+              builder: (context, temaProvider, _) {
+                if (temaProvider.state == TemaState.loading) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(32),
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+
+                if (temaProvider.state == TemaState.error) {
+                  return Center(
+                    child: Column(
+                      children: [
+                        Text(temaProvider.errorMessage ?? 'Error al cargar temas'),
+                        const SizedBox(height: 8),
+                        ElevatedButton(
+                          onPressed: () => temaProvider.loadTemas(),
+                          child: const Text('Reintentar'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                if (temaProvider.temas.isEmpty) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(32),
+                      child: Text('No hay temas disponibles'),
+                    ),
+                  );
+                }
+
+                return GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                  ),
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: temaProvider.temas.length,
+                  itemBuilder: (context, index) {
+                    final tema = temaProvider.temas[index];
+                    IconData icon;
+                    Color color;
+
+                    // Assign icons based on tema name
+                    if (tema.nombre.toLowerCase().contains('número')) {
+                      icon = Icons.numbers;
+                      color = AppColors.basicLevelColor;
+                    } else if (tema.nombre.toLowerCase().contains('comida')) {
+                      icon = Icons.restaurant;
+                      color = AppColors.intermediateLevelColor;
+                    } else if (tema.nombre.toLowerCase().contains('objeto')) {
+                      icon = Icons.home_outlined;
+                      color = AppColors.advancedLevelColor;
+                    } else if (tema.nombre.toLowerCase().contains('animal')) {
+                      icon = Icons.pets;
+                      color = AppColors.secondaryColor;
+                    } else {
+                      icon = Icons.school;
+                      color = AppColors.accentColor;
+                    }
+
+                    return _TemaCard(
+                      icon: icon,
+                      title: tema.nombre,
+                      color: color,
+                      onTap: () {
+                        context.push('/alumno/tema/${tema.id}');
+                      },
                     );
                   },
-                ),
-                _TemaCard(
-                  icon: Icons.restaurant,
-                  title: AppStrings.comidas,
-                  color: AppColors.intermediateLevelColor,
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Módulo en desarrollo'),
-                      ),
-                    );
-                  },
-                ),
-                _TemaCard(
-                  icon: Icons.home_outlined,
-                  title: AppStrings.objetosCotidianos,
-                  color: AppColors.advancedLevelColor,
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Módulo en desarrollo'),
-                      ),
-                    );
-                  },
-                ),
-                _TemaCard(
-                  icon: Icons.pets,
-                  title: AppStrings.animales,
-                  color: AppColors.secondaryColor,
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Módulo en desarrollo'),
-                      ),
-                    );
-                  },
-                ),
-              ],
+                );
+              },
             ),
             const SizedBox(height: 24),
             // Quick Actions
@@ -153,11 +190,7 @@ class AlumnoHomeScreen extends StatelessWidget {
               icon: Icons.grade,
               title: AppStrings.misCalificaciones,
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Módulo en desarrollo'),
-                  ),
-                );
+                context.push('/alumno/calificaciones');
               },
             ),
             const SizedBox(height: 12),
@@ -165,11 +198,7 @@ class AlumnoHomeScreen extends StatelessWidget {
               icon: Icons.person,
               title: AppStrings.miPerfil,
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Módulo en desarrollo'),
-                  ),
-                );
+                context.push('/alumno/perfil');
               },
             ),
           ],

@@ -9,6 +9,18 @@ import '../../features/auth/domain/usecases/get_current_user_usecase.dart';
 import '../../features/auth/domain/usecases/login_usecase.dart';
 import '../../features/auth/domain/usecases/logout_usecase.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
+import '../../features/alumno/data/datasources/tema_remote_datasource.dart';
+import '../../features/alumno/data/datasources/actividad_remote_datasource.dart';
+import '../../features/alumno/data/datasources/calificacion_remote_datasource.dart';
+import '../../features/alumno/data/repositories/tema_repository_impl.dart';
+import '../../features/alumno/data/repositories/actividad_repository_impl.dart';
+import '../../features/alumno/data/repositories/calificacion_repository_impl.dart';
+import '../../features/alumno/domain/repositories/tema_repository.dart';
+import '../../features/alumno/domain/repositories/actividad_repository.dart';
+import '../../features/alumno/domain/repositories/calificacion_repository.dart';
+import '../../features/alumno/presentation/providers/tema_provider.dart';
+import '../../features/alumno/presentation/providers/actividad_provider.dart';
+import '../../features/alumno/presentation/providers/calificacion_provider.dart';
 import '../network/dio_client.dart';
 
 class DependencyInjection {
@@ -32,6 +44,21 @@ class DependencyInjection {
 
   // Providers
   static late AuthProvider authProvider;
+
+  // Alumno Data Sources
+  static late TemaRemoteDataSource temaRemoteDataSource;
+  static late ActividadRemoteDataSource actividadRemoteDataSource;
+  static late CalificacionRemoteDataSource calificacionRemoteDataSource;
+
+  // Alumno Repositories
+  static late TemaRepository temaRepository;
+  static late ActividadRepository actividadRepository;
+  static late CalificacionRepository calificacionRepository;
+
+  // Alumno Providers
+  static late TemaProvider temaProvider;
+  static late ActividadProvider actividadProvider;
+  static late CalificacionProvider calificacionProvider;
 
   static Future<void> init() async {
     // Core
@@ -68,5 +95,20 @@ class DependencyInjection {
       getCurrentUserUseCase: getCurrentUserUseCase,
       checkAuthStatusUseCase: checkAuthStatusUseCase,
     );
+
+    // Alumno Data Sources
+    temaRemoteDataSource = TemaRemoteDataSourceImpl(dioClient: dioClient);
+    actividadRemoteDataSource = ActividadRemoteDataSourceImpl(dioClient: dioClient);
+    calificacionRemoteDataSource = CalificacionRemoteDataSourceImpl(dioClient: dioClient);
+
+    // Alumno Repositories
+    temaRepository = TemaRepositoryImpl(remoteDataSource: temaRemoteDataSource);
+    actividadRepository = ActividadRepositoryImpl(remoteDataSource: actividadRemoteDataSource);
+    calificacionRepository = CalificacionRepositoryImpl(remoteDataSource: calificacionRemoteDataSource);
+
+    // Alumno Providers
+    temaProvider = TemaProvider(temaRepository: temaRepository);
+    actividadProvider = ActividadProvider(actividadRepository: actividadRepository);
+    calificacionProvider = CalificacionProvider(calificacionRepository: calificacionRepository);
   }
 }

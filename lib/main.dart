@@ -24,6 +24,15 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(
           value: DependencyInjection.authProvider,
         ),
+        ChangeNotifierProvider.value(
+          value: DependencyInjection.temaProvider,
+        ),
+        ChangeNotifierProvider.value(
+          value: DependencyInjection.actividadProvider,
+        ),
+        ChangeNotifierProvider.value(
+          value: DependencyInjection.calificacionProvider,
+        ),
       ],
       child: Consumer(
         builder: (context, AuthProvider authProvider, child) {

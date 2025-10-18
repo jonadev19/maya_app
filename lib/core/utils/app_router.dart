@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/admin/presentation/screens/admin_home_screen.dart';
 import '../../features/alumno/presentation/screens/alumno_home_screen.dart';
+import '../../features/alumno/presentation/screens/tema_detail_screen.dart';
+import '../../features/alumno/presentation/screens/actividad_screen.dart';
+import '../../features/alumno/presentation/screens/calificaciones_screen.dart';
+import '../../features/alumno/presentation/screens/perfil_screen.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
@@ -74,6 +78,46 @@ class AppRouter {
           state: state,
           child: const AlumnoHomeScreen(),
         ),
+        routes: [
+          GoRoute(
+            path: 'tema/:id',
+            pageBuilder: (context, state) {
+              final id = int.parse(state.pathParameters['id']!);
+              return _buildPageWithSlideTransition(
+                context: context,
+                state: state,
+                child: TemaDetailScreen(temaId: id),
+              );
+            },
+          ),
+          GoRoute(
+            path: 'actividad/:id',
+            pageBuilder: (context, state) {
+              final id = int.parse(state.pathParameters['id']!);
+              return _buildPageWithSlideTransition(
+                context: context,
+                state: state,
+                child: ActividadScreen(actividadId: id),
+              );
+            },
+          ),
+          GoRoute(
+            path: 'calificaciones',
+            pageBuilder: (context, state) => _buildPageWithSlideTransition(
+              context: context,
+              state: state,
+              child: const CalificacionesScreen(),
+            ),
+          ),
+          GoRoute(
+            path: 'perfil',
+            pageBuilder: (context, state) => _buildPageWithSlideTransition(
+              context: context,
+              state: state,
+              child: const PerfilScreen(),
+            ),
+          ),
+        ],
       ),
     ],
   );
