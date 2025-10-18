@@ -13,12 +13,12 @@ class TemaModel extends Tema {
 
   factory TemaModel.fromJson(Map<String, dynamic> json) {
     return TemaModel(
-      id: json['id'] is String ? int.parse(json['id']) : json['id'] as int,
-      nombre: json['nombre'] as String,
-      descripcion: json['descripcion'] as String,
+      id: json['id'].toString(),
+      nombre: (json['nombre'] as String?) ?? '',
+      descripcion: (json['descripcion'] as String?) ?? '',
       imagenUrl: json['imagen_url'] as String?,
-      nivel: json['nivel'] as String,
-      orden: json['orden'] is String ? int.parse(json['orden']) : json['orden'] as int,
+      nivel: (json['nivel'] as String?) ?? 'basico',
+      orden: json['orden'] is String ? int.parse(json['orden']) : (json['orden'] as int? ?? 0),
       activo: json['activo'] as bool? ?? true,
     );
   }

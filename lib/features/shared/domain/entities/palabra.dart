@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 
 class Palabra extends Equatable {
-  final int id;
-  final int temaId;
+  final String id;
+  final String temaId;
   final String palabraMaya;
   final String traduccionEspanol;
   final String? pronunciacion;

@@ -1,11 +1,11 @@
 import 'package:equatable/equatable.dart';
 
 class Alumno extends Equatable {
-  final int id;
+  final String id;
   final String nombre;
   final String apellido;
   final String email;
-  final int? grupoId;
+  final String? grupoId;
   final String? grupoNombre;
   final String nivel;
   final DateTime? fechaRegistro;

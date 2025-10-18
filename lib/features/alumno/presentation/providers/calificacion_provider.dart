@@ -44,7 +44,7 @@ class CalificacionProvider with ChangeNotifier {
     );
   }
 
-  Future<void> loadCalificacionesByTema(int temaId) async {
+  Future<void> loadCalificacionesByTema(String temaId) async {
     _state = CalificacionState.loading;
     _errorMessage = null;
     notifyListeners();

@@ -3,7 +3,7 @@ import '../../../shared/data/models/calificacion_model.dart';
 
 abstract class CalificacionRemoteDataSource {
   Future<List<CalificacionModel>> getCalificacionesAlumno();
-  Future<List<CalificacionModel>> getCalificacionesByTema(int temaId);
+  Future<List<CalificacionModel>> getCalificacionesByTema(String temaId);
 }
 
 class CalificacionRemoteDataSourceImpl implements CalificacionRemoteDataSource {
@@ -19,7 +19,7 @@ class CalificacionRemoteDataSourceImpl implements CalificacionRemoteDataSource {
   }
 
   @override
-  Future<List<CalificacionModel>> getCalificacionesByTema(int temaId) async {
+  Future<List<CalificacionModel>> getCalificacionesByTema(String temaId) async {
     final response = await dioClient.get('/calificaciones/mis-calificaciones/?tema_id=$temaId');
     final List<dynamic> data = response.data;
     return data.map((json) => CalificacionModel.fromJson(json)).toList();

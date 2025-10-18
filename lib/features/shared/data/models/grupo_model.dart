@@ -12,9 +12,9 @@ class GrupoModel extends Grupo {
 
   factory GrupoModel.fromJson(Map<String, dynamic> json) {
     return GrupoModel(
-      id: json['id'] is String ? int.parse(json['id']) : json['id'] as int,
-      nombre: json['nombre'] as String,
-      nivel: json['nivel'] as String,
+      id: json['id'].toString(),
+      nombre: (json['nombre'] as String?) ?? '',
+      nivel: (json['nivel'] as String?) ?? 'basico',
       descripcion: json['descripcion'] as String?,
       cantidadAlumnos: json['cantidad_alumnos'] is String ? int.parse(json['cantidad_alumnos']) : (json['cantidad_alumnos'] as int? ?? 0),
       activo: json['activo'] as bool? ?? true,

@@ -6,7 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../providers/tema_provider.dart';
 
 class TemaDetailScreen extends StatefulWidget {
-  final int temaId;
+  final String temaId;
 
   const TemaDetailScreen({super.key, required this.temaId});
 

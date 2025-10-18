@@ -7,8 +7,8 @@ import '../../../shared/domain/entities/actividad.dart';
 
 abstract class TemaRepository {
   Future<Either<Failure, List<Tema>>> getTemas();
-  Future<Either<Failure, Tema>> getTemaById(int id);
-  Future<Either<Failure, List<Material>>> getMaterialesByTema(int temaId);
-  Future<Either<Failure, List<Palabra>>> getPalabrasByTema(int temaId);
-  Future<Either<Failure, List<Actividad>>> getActividadesByTema(int temaId);
+  Future<Either<Failure, Tema>> getTemaById(String id);
+  Future<Either<Failure, List<Material>>> getMaterialesByTema(String temaId);
+  Future<Either<Failure, List<Palabra>>> getPalabrasByTema(String temaId);
+  Future<Either<Failure, List<Actividad>>> getActividadesByTema(String temaId);
 }

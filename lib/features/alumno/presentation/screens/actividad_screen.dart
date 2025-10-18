@@ -5,7 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../providers/actividad_provider.dart';
 
 class ActividadScreen extends StatefulWidget {
-  final int actividadId;
+  final String actividadId;
 
   const ActividadScreen({super.key, required this.actividadId});
 
@@ -126,7 +126,7 @@ class _ActividadScreenState extends State<ActividadScreen> {
                                 ? AppColors.primaryColor.withOpacity(0.1)
                                 : null,
                           ),
-                          child: RadioListTile<int>(
+                          child: RadioListTile<String>(
                             value: opcion.id,
                             groupValue: selectedOpcionId,
                             title: Text(opcion.textoOpcion),

@@ -15,14 +15,14 @@ class CalificacionModel extends Calificacion {
 
   factory CalificacionModel.fromJson(Map<String, dynamic> json) {
     return CalificacionModel(
-      id: json['id'] is String ? int.parse(json['id']) : json['id'] as int,
-      alumnoId: json['alumno_id'] is String ? int.parse(json['alumno_id']) : json['alumno_id'] as int,
-      actividadId: json['actividad_id'] is String ? int.parse(json['actividad_id']) : json['actividad_id'] as int,
-      actividadTitulo: json['actividad_titulo'] as String,
-      temaNombre: json['tema_nombre'] as String,
-      puntuacionObtenida: json['puntuacion_obtenida'] is String ? int.parse(json['puntuacion_obtenida']) : json['puntuacion_obtenida'] as int,
-      puntuacionMaxima: json['puntuacion_maxima'] is String ? int.parse(json['puntuacion_maxima']) : json['puntuacion_maxima'] as int,
-      fechaRealizacion: DateTime.parse(json['fecha_realizacion'] as String),
+      id: json['id'].toString(),
+      alumnoId: json['alumno_id'].toString(),
+      actividadId: json['actividad_id'].toString(),
+      actividadTitulo: (json['actividad_titulo'] as String?) ?? '',
+      temaNombre: (json['tema_nombre'] as String?) ?? '',
+      puntuacionObtenida: json['puntuacion_obtenida'] is String ? int.parse(json['puntuacion_obtenida']) : (json['puntuacion_obtenida'] as int? ?? 0),
+      puntuacionMaxima: json['puntuacion_maxima'] is String ? int.parse(json['puntuacion_maxima']) : (json['puntuacion_maxima'] as int? ?? 100),
+      fechaRealizacion: DateTime.parse((json['fecha_realizacion'] as String?) ?? DateTime.now().toIso8601String()),
       intentos: json['intentos'] is String ? int.parse(json['intentos']) : (json['intentos'] as int? ?? 1),
     );
   }

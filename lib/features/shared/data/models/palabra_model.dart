@@ -13,10 +13,10 @@ class PalabraModel extends Palabra {
 
   factory PalabraModel.fromJson(Map<String, dynamic> json) {
     return PalabraModel(
-      id: json['id'] is String ? int.parse(json['id']) : json['id'] as int,
-      temaId: json['tema_id'] is String ? int.parse(json['tema_id']) : json['tema_id'] as int,
-      palabraMaya: json['palabra_maya'] as String,
-      traduccionEspanol: json['traduccion_espanol'] as String,
+      id: json['id'].toString(),
+      temaId: json['tema_id'].toString(),
+      palabraMaya: (json['palabra_maya'] as String?) ?? '',
+      traduccionEspanol: (json['traduccion_espanol'] as String?) ?? '',
       pronunciacion: json['pronunciacion'] as String?,
       audioUrl: json['audio_url'] as String?,
       imagenUrl: json['imagen_url'] as String?,

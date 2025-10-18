@@ -82,7 +82,7 @@ class AppRouter {
           GoRoute(
             path: 'tema/:id',
             pageBuilder: (context, state) {
-              final id = int.parse(state.pathParameters['id']!);
+              final id = state.pathParameters['id']!;
               return _buildPageWithSlideTransition(
                 context: context,
                 state: state,
@@ -93,7 +93,7 @@ class AppRouter {
           GoRoute(
             path: 'actividad/:id',
             pageBuilder: (context, state) {
-              final id = int.parse(state.pathParameters['id']!);
+              final id = state.pathParameters['id']!;
               return _buildPageWithSlideTransition(
                 context: context,
                 state: state,

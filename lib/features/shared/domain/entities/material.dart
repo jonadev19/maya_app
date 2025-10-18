@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 
 class Material extends Equatable {
-  final int id;
-  final int temaId;
+  final String id;
+  final String temaId;
   final String titulo;
   final String contenido;
   final String tipo; // 'texto', 'audio', 'video', 'imagen'

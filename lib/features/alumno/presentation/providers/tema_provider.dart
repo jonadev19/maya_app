@@ -49,7 +49,7 @@ class TemaProvider with ChangeNotifier {
     );
   }
 
-  Future<void> loadTemaDetails(int temaId) async {
+  Future<void> loadTemaDetails(String temaId) async {
     _state = TemaState.loading;
     _errorMessage = null;
     notifyListeners();

@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class Grupo extends Equatable {
-  final int id;
+  final String id;
   final String nombre;
   final String nivel; // 'basico', 'intermedio', 'avanzado'
   final String? descripcion;

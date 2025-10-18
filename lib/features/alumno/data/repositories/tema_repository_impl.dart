@@ -26,7 +26,7 @@ class TemaRepositoryImpl implements TemaRepository {
   }
 
   @override
-  Future<Either<Failure, Tema>> getTemaById(int id) async {
+  Future<Either<Failure, Tema>> getTemaById(String id) async {
     try {
       final tema = await remoteDataSource.getTemaById(id);
       return Right(tema.toEntity());
@@ -38,7 +38,7 @@ class TemaRepositoryImpl implements TemaRepository {
   }
 
   @override
-  Future<Either<Failure, List<Material>>> getMaterialesByTema(int temaId) async {
+  Future<Either<Failure, List<Material>>> getMaterialesByTema(String temaId) async {
     try {
       final materiales = await remoteDataSource.getMaterialesByTema(temaId);
       return Right(materiales.map((model) => model.toEntity()).toList());
@@ -50,7 +50,7 @@ class TemaRepositoryImpl implements TemaRepository {
   }
 
   @override
-  Future<Either<Failure, List<Palabra>>> getPalabrasByTema(int temaId) async {
+  Future<Either<Failure, List<Palabra>>> getPalabrasByTema(String temaId) async{
     try {
       final palabras = await remoteDataSource.getPalabrasByTema(temaId);
       return Right(palabras.map((model) => model.toEntity()).toList());
@@ -62,7 +62,7 @@ class TemaRepositoryImpl implements TemaRepository {
   }
 
   @override
-  Future<Either<Failure, List<Actividad>>> getActividadesByTema(int temaId) async {
+  Future<Either<Failure, List<Actividad>>> getActividadesByTema(String temaId) async {
     try {
       final actividades = await remoteDataSource.getActividadesByTema(temaId);
       return Right(actividades.map((model) => model.toEntity()).toList());

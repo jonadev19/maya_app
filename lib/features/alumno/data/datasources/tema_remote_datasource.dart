@@ -6,10 +6,10 @@ import '../../../shared/data/models/actividad_model.dart';
 
 abstract class TemaRemoteDataSource {
   Future<List<TemaModel>> getTemas();
-  Future<TemaModel> getTemaById(int id);
-  Future<List<MaterialModel>> getMaterialesByTema(int temaId);
-  Future<List<PalabraModel>> getPalabrasByTema(int temaId);
-  Future<List<ActividadModel>> getActividadesByTema(int temaId);
+  Future<TemaModel> getTemaById(String id);
+  Future<List<MaterialModel>> getMaterialesByTema(String temaId);
+  Future<List<PalabraModel>> getPalabrasByTema(String temaId);
+  Future<List<ActividadModel>> getActividadesByTema(String temaId);
 }
 
 class TemaRemoteDataSourceImpl implements TemaRemoteDataSource {
@@ -25,27 +25,27 @@ class TemaRemoteDataSourceImpl implements TemaRemoteDataSource {
   }
 
   @override
-  Future<TemaModel> getTemaById(int id) async {
+  Future<TemaModel> getTemaById(String id) async {
     final response = await dioClient.get('/temas/$id/');
     return TemaModel.fromJson(response.data);
   }
 
   @override
-  Future<List<MaterialModel>> getMaterialesByTema(int temaId) async {
+  Future<List<MaterialModel>> getMaterialesByTema(String temaId) async {
     final response = await dioClient.get('/temas/$temaId/materiales/');
     final List<dynamic> data = response.data;
     return data.map((json) => MaterialModel.fromJson(json)).toList();
   }
 
   @override
-  Future<List<PalabraModel>> getPalabrasByTema(int temaId) async {
+  Future<List<PalabraModel>> getPalabrasByTema(String temaId) async {
     final response = await dioClient.get('/temas/$temaId/palabras/');
     final List<dynamic> data = response.data;
     return data.map((json) => PalabraModel.fromJson(json)).toList();
   }
 
   @override
-  Future<List<ActividadModel>> getActividadesByTema(int temaId) async {
+  Future<List<ActividadModel>> getActividadesByTema(String temaId) async {
     final response = await dioClient.get('/temas/$temaId/actividades/');
     final List<dynamic> data = response.data;
     return data.map((json) => ActividadModel.fromJson(json)).toList();

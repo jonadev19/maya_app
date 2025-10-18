@@ -13,18 +13,18 @@ class ActividadProvider with ChangeNotifier {
   ActividadState _state = ActividadState.initial;
   Actividad? _actividad;
   List<Pregunta> _preguntas = [];
-  Map<int, int> _respuestas = {}; // preguntaId -> opcionId
+  Map<String, String> _respuestas = {}; // preguntaId -> opcionId
   Map<String, dynamic>? _resultado;
   String? _errorMessage;
 
   ActividadState get state => _state;
   Actividad? get actividad => _actividad;
   List<Pregunta> get preguntas => _preguntas;
-  Map<int, int> get respuestas => _respuestas;
+  Map<String, String> get respuestas => _respuestas;
   Map<String, dynamic>? get resultado => _resultado;
   String? get errorMessage => _errorMessage;
 
-  Future<void> loadActividad(int actividadId) async {
+  Future<void> loadActividad(String actividadId) async {
     _state = ActividadState.loading;
     _errorMessage = null;
     _respuestas = {};
@@ -59,7 +59,7 @@ class ActividadProvider with ChangeNotifier {
     );
   }
 
-  void selectRespuesta(int preguntaId, int opcionId) {
+  void selectRespuesta(String preguntaId, String opcionId) {
     _respuestas[preguntaId] = opcionId;
     notifyListeners();
   }

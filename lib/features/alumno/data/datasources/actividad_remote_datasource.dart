@@ -3,11 +3,11 @@ import '../../../shared/data/models/actividad_model.dart';
 import '../../../shared/data/models/pregunta_model.dart';
 
 abstract class ActividadRemoteDataSource {
-  Future<ActividadModel> getActividadById(int id);
-  Future<List<PreguntaModel>> getPreguntasByActividad(int actividadId);
+  Future<ActividadModel> getActividadById(String id);
+  Future<List<PreguntaModel>> getPreguntasByActividad(String actividadId);
   Future<Map<String, dynamic>> submitActividad({
-    required int actividadId,
-    required Map<int, int> respuestas, // preguntaId -> opcionId
+    required String actividadId,
+    required Map<String, String> respuestas, // preguntaId -> opcionId
   });
 }
 
@@ -17,13 +17,13 @@ class ActividadRemoteDataSourceImpl implements ActividadRemoteDataSource {
   ActividadRemoteDataSourceImpl({required this.dioClient});
 
   @override
-  Future<ActividadModel> getActividadById(int id) async {
+  Future<ActividadModel> getActividadById(String id) async {
     final response = await dioClient.get('/actividades/$id/');
     return ActividadModel.fromJson(response.data);
   }
 
   @override
-  Future<List<PreguntaModel>> getPreguntasByActividad(int actividadId) async {
+  Future<List<PreguntaModel>> getPreguntasByActividad(String actividadId) async {
     final response = await dioClient.get('/actividades/$actividadId/preguntas/');
     final List<dynamic> data = response.data;
     return data.map((json) => PreguntaModel.fromJson(json)).toList();
@@ -31,8 +31,8 @@ class ActividadRemoteDataSourceImpl implements ActividadRemoteDataSource {
 
   @override
   Future<Map<String, dynamic>> submitActividad({
-    required int actividadId,
-    required Map<int, int> respuestas,
+    required String actividadId,
+    required Map<String, String> respuestas,
   }) async {
     final response = await dioClient.post(
       '/actividades/$actividadId/submit/',

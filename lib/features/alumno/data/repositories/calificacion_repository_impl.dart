@@ -23,7 +23,7 @@ class CalificacionRepositoryImpl implements CalificacionRepository {
   }
 
   @override
-  Future<Either<Failure, List<Calificacion>>> getCalificacionesByTema(int temaId) async {
+  Future<Either<Failure, List<Calificacion>>> getCalificacionesByTema(String temaId) async {
     try {
       final calificaciones = await remoteDataSource.getCalificacionesByTema(temaId);
       return Right(calificaciones.map((model) => model.toEntity()).toList());

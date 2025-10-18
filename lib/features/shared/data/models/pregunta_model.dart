@@ -12,14 +12,14 @@ class PreguntaModel extends Pregunta {
 
   factory PreguntaModel.fromJson(Map<String, dynamic> json) {
     return PreguntaModel(
-      id: json['id'] is String ? int.parse(json['id']) : json['id'] as int,
-      actividadId: json['actividad_id'] is String ? int.parse(json['actividad_id']) : json['actividad_id'] as int,
-      textoPregunta: json['texto_pregunta'] as String,
-      tipo: json['tipo'] as String,
-      opciones: (json['opciones'] as List)
-          .map((opcion) => OpcionRespuestaModel.fromJson(opcion))
-          .toList(),
-      puntos: json['puntos'] is String ? int.parse(json['puntos']) : json['puntos'] as int,
+      id: json['id'].toString(),
+      actividadId: json['actividad_id'].toString(),
+      textoPregunta: (json['texto_pregunta'] as String?) ?? '',
+      tipo: (json['tipo'] as String?) ?? 'opcion_multiple',
+      opciones: (json['opciones'] as List?)
+          ?.map((opcion) => OpcionRespuestaModel.fromJson(opcion))
+          .toList() ?? [],
+      puntos: json['puntos'] is String ? int.parse(json['puntos']) : (json['puntos'] as int? ?? 1),
     );
   }
 
@@ -59,9 +59,9 @@ class OpcionRespuestaModel extends OpcionRespuesta {
 
   factory OpcionRespuestaModel.fromJson(Map<String, dynamic> json) {
     return OpcionRespuestaModel(
-      id: json['id'] is String ? int.parse(json['id']) : json['id'] as int,
-      textoOpcion: json['texto_opcion'] as String,
-      esCorrecta: json['es_correcta'] as bool,
+      id: json['id'].toString(),
+      textoOpcion: (json['texto_opcion'] as String?) ?? '',
+      esCorrecta: (json['es_correcta'] as bool?) ?? false,
     );
   }
 

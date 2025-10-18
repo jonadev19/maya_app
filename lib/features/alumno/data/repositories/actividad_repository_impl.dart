@@ -12,7 +12,7 @@ class ActividadRepositoryImpl implements ActividadRepository {
   ActividadRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, Actividad>> getActividadById(int id) async {
+  Future<Either<Failure, Actividad>> getActividadById(String id) async {
     try {
       final actividad = await remoteDataSource.getActividadById(id);
       return Right(actividad.toEntity());
@@ -24,7 +24,7 @@ class ActividadRepositoryImpl implements ActividadRepository {
   }
 
   @override
-  Future<Either<Failure, List<Pregunta>>> getPreguntasByActividad(int actividadId) async {
+  Future<Either<Failure, List<Pregunta>>> getPreguntasByActividad(String actividadId) async {
     try {
       final preguntas = await remoteDataSource.getPreguntasByActividad(actividadId);
       return Right(preguntas.map((model) => model.toEntity()).toList());
@@ -37,8 +37,8 @@ class ActividadRepositoryImpl implements ActividadRepository {
 
   @override
   Future<Either<Failure, Map<String, dynamic>>> submitActividad({
-    required int actividadId,
-    required Map<int, int> respuestas,
+    required String actividadId,
+    required Map<String, String> respuestas,
   }) async {
     try {
       final result = await remoteDataSource.submitActividad(

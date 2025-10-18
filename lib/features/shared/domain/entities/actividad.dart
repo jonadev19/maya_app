@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 
 class Actividad extends Equatable {
-  final int id;
-  final int temaId;
+  final String id;
+  final String temaId;
   final String titulo;
   final String descripcion;
   final String tipo; // 'quiz', 'emparejamiento', 'completar', 'audio'

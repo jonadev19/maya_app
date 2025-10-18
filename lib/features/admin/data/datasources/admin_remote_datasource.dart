@@ -5,17 +5,17 @@ import '../../../shared/data/models/calificacion_model.dart';
 
 abstract class AdminRemoteDataSource {
   Future<List<AlumnoModel>> getAlumnos();
-  Future<AlumnoModel> getAlumnoById(int id);
+  Future<AlumnoModel> getAlumnoById(String id);
   Future<AlumnoModel> createAlumno(Map<String, dynamic> data);
-  Future<AlumnoModel> updateAlumno(int id, Map<String, dynamic> data);
-  Future<void> deleteAlumno(int id);
+  Future<AlumnoModel> updateAlumno(String id, Map<String, dynamic> data);
+  Future<void> deleteAlumno(String id);
 
   Future<List<GrupoModel>> getGrupos();
   Future<GrupoModel> createGrupo(Map<String, dynamic> data);
-  Future<GrupoModel> updateGrupo(int id, Map<String, dynamic> data);
-  Future<void> deleteGrupo(int id);
+  Future<GrupoModel> updateGrupo(String id, Map<String, dynamic> data);
+  Future<void> deleteGrupo(String id);
 
-  Future<List<CalificacionModel>> getCalificacionesByAlumno(int alumnoId);
+  Future<List<CalificacionModel>> getCalificacionesByAlumno(String alumnoId);
   Future<List<CalificacionModel>> getTodasCalificaciones();
 }
 
@@ -32,7 +32,7 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
   }
 
   @override
-  Future<AlumnoModel> getAlumnoById(int id) async {
+  Future<AlumnoModel> getAlumnoById(String id) async {
     final response = await dioClient.get('/admin/alumnos/$id/');
     return AlumnoModel.fromJson(response.data);
   }
@@ -44,13 +44,13 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
   }
 
   @override
-  Future<AlumnoModel> updateAlumno(int id, Map<String, dynamic> data) async {
+  Future<AlumnoModel> updateAlumno(String id, Map<String, dynamic> data) async {
     final response = await dioClient.put('/admin/alumnos/$id/', data: data);
     return AlumnoModel.fromJson(response.data);
   }
 
   @override
-  Future<void> deleteAlumno(int id) async {
+  Future<void> deleteAlumno(String id) async {
     await dioClient.delete('/admin/alumnos/$id/');
   }
 
@@ -68,18 +68,18 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
   }
 
   @override
-  Future<GrupoModel> updateGrupo(int id, Map<String, dynamic> data) async {
+  Future<GrupoModel> updateGrupo(String id, Map<String, dynamic> data) async {
     final response = await dioClient.put('/admin/grupos/$id/', data: data);
     return GrupoModel.fromJson(response.data);
   }
 
   @override
-  Future<void> deleteGrupo(int id) async {
+  Future<void> deleteGrupo(String id) async {
     await dioClient.delete('/admin/grupos/$id/');
   }
 
   @override
-  Future<List<CalificacionModel>> getCalificacionesByAlumno(int alumnoId) async {
+  Future<List<CalificacionModel>> getCalificacionesByAlumno(String alumnoId) async {
     final response = await dioClient.get('/admin/calificaciones/?alumno_id=$alumnoId');
     final List<dynamic> data = response.data;
     return data.map((json) => CalificacionModel.fromJson(json)).toList();

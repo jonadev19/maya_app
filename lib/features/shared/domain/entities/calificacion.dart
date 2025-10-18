@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 
 class Calificacion extends Equatable {
-  final int id;
-  final int alumnoId;
-  final int actividadId;
+  final String id;
+  final String alumnoId;
+  final String actividadId;
   final String actividadTitulo;
   final String temaNombre;
   final int puntuacionObtenida;

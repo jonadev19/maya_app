@@ -13,13 +13,13 @@ class MaterialModel extends Material {
 
   factory MaterialModel.fromJson(Map<String, dynamic> json) {
     return MaterialModel(
-      id: json['id'] is String ? int.parse(json['id']) : json['id'] as int,
-      temaId: json['tema_id'] is String ? int.parse(json['tema_id']) : json['tema_id'] as int,
-      titulo: json['titulo'] as String,
-      contenido: json['contenido'] as String,
-      tipo: json['tipo'] as String,
+      id: json['id'].toString(),
+      temaId: json['tema_id'].toString(),
+      titulo: (json['titulo'] as String?) ?? '',
+      contenido: (json['contenido'] as String?) ?? '',
+      tipo: (json['tipo'] as String?) ?? 'texto',
       archivoUrl: json['archivo_url'] as String?,
-      orden: json['orden'] is String ? int.parse(json['orden']) : json['orden'] as int,
+      orden: json['orden'] is String ? int.parse(json['orden']) : (json['orden'] as int? ?? 0),
     );
   }
 

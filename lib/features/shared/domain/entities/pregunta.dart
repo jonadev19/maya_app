@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 
 class Pregunta extends Equatable {
-  final int id;
-  final int actividadId;
+  final String id;
+  final String actividadId;
   final String textoPregunta;
   final String tipo; // 'opcion_multiple', 'verdadero_falso', 'completar'
   final List<OpcionRespuesta> opciones;
@@ -22,7 +22,7 @@ class Pregunta extends Equatable {
 }
 
 class OpcionRespuesta extends Equatable {
-  final int id;
+  final String id;
   final String textoOpcion;
   final bool esCorrecta;
 
