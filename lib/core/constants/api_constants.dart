@@ -1,9 +1,23 @@
-class ApiConstants {
-  // Base URL - Cambiar según el entorno
-  static const String baseUrl = 'http://localhost:8000/api';
+import 'dart:io';
 
-  // Para dispositivos físicos, usa tu IP local:
-  // static const String baseUrl = 'http://192.168.1.X:8000/api';
+class ApiConstants {
+  // Base URL - Cambia dinámicamente según la plataforma
+  static String get baseUrl {
+    if (Platform.isAndroid) {
+      // IP especial para que el emulador de Android acceda al localhost de la máquina host
+      return 'http://10.0.2.2:8000/api';
+    } else if (Platform.isIOS) {
+      // El simulador de iOS puede acceder directamente a localhost
+      return 'http://127.0.0.1:8000/api';
+    } else {
+      // Fallback para otras plataformas (ej. web, desktop)
+      return 'http://127.0.0.1:8000/api';
+    }
+  }
+
+  // Para dispositivos físicos, usa tu IP local (debes configurarla manualmente):
+  // static const String _localIp = '192.168.1.X'; // <-- REEMPLAZA ESTA IP
+  // static const String baseUrl = 'http://$_localIp:8000/api';
 
   // Para producción:
   // static const String baseUrl = 'https://api.mayaapp.com/api';
