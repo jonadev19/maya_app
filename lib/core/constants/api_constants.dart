@@ -5,13 +5,13 @@ class ApiConstants {
   static String get baseUrl {
     if (Platform.isAndroid) {
       // IP especial para que el emulador de Android acceda al localhost de la máquina host
-      return 'http://10.0.2.2:8000/api';
+      return 'https://maya-learning-backend.onrender.com/api';
     } else if (Platform.isIOS) {
       // El simulador de iOS puede acceder directamente a localhost
-      return 'http://127.0.0.1:8000/api';
+      return 'https://maya-learning-backend.onrender.com/api';
     } else {
       // Fallback para otras plataformas (ej. web, desktop)
-      return 'http://127.0.0.1:8000/api';
+      return 'https://maya-learning-backend.onrender.com/api';
     }
   }
 
